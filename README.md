@@ -1,4 +1,4 @@
-# PlayController Component Documentation
+# PlayController
 
 The `PlayController` component is part of a gameplay interface, enabling users to initiate a play or cash out based on their current game state. It supports dynamic currency handling, play amount adjustment, and play limits, offering buttons to increase/decrease the play amount and handle user actions like initiating the play or cashing out.
 
