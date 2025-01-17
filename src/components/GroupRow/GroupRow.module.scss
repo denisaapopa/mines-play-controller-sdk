@@ -1,0 +1,34 @@
+.label {
+  font-style: Inter;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.02em;
+  color: rgba(110, 98, 98, 0.6);
+  margin-bottom: 6px;
+}
+
+.group {
+  display: flex;
+  height: 44px;
+
+  .groupItem {
+    $border-radius: 10px;
+    border-radius: 0;
+    box-sizing: border-box;
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+    }
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+
+    & + .groupItem {
+      margin-left: 2px;
+    }
+  }
+}

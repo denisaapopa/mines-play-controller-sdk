@@ -1,0 +1,10 @@
+.base {
+  padding: 10px 12px;
+  background: rgba(var(--bg-color-rgb, 110, 98, 98), 0.3);
+  color: var(--text-color-hex, #ffffff);
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  width: 100%;
+  backdrop-filter: blur(8px);
+}

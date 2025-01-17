@@ -1,0 +1,44 @@
+.base {
+  position: relative;
+  display: flex;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.icon {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.input {
+  color: var(--text-color-hex, #ffffff);
+  .base & {
+    padding-left: 66px;
+    padding-right: 46px;
+    border-radius: inherit;
+  }
+}
+
+.clear {
+  opacity: 0;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  transition: 200ms opacity ease-in-out;
+  cursor: pointer;
+
+  &:focus,
+  .base:hover &,
+  .input:focus + & {
+    opacity: 1;
+  }
+}
