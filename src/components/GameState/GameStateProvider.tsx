@@ -23,7 +23,7 @@ const GameStateProvider: React.FC<{
   const [playedRounds, setPlayedRounds] = useState(0);
   const [selection, setSelection] = useState<number[]>([]);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-  const [numberOfPlays, setNumberOfPlays] = useState(0);
+  const [numberOfPlays, setNumberOfPlays] = useState(Infinity);
 
   // Handlers
   const startAutoplay = useCallback((numPlays: number) => {

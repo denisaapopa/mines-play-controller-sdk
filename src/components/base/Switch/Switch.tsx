@@ -13,23 +13,17 @@ export const Switch = ({
   return (
     <label htmlFor="material-switch">
       <HeadlessSwitch checked={enabled} onChange={setEnabled} as={Fragment}>
-        {({ checked, disabled }) => (
-          <div className={cx(styles.base)}>
-            <span> Manual</span>
-            <div
-              className={cx(
-                styles.switcher,
-                checked ? styles.blue : styles.gray,
-                disabled && styles.disabled,
-              )}
-            >
-              <span
-                className={cx(styles.thumb, checked && styles["move-right"])}
-              />
-            </div>
-            <span> Auto</span>
+        <div className={cx(styles.base)}>
+          <div
+            className={cx(styles.switcher, enabled ? styles.blue : styles.gray)}
+          >
+            <span
+              className={cx(styles.thumb, enabled && styles["move-right"])}
+            />
           </div>
-        )}
+
+          <span>Auto</span>
+        </div>
       </HeadlessSwitch>
     </label>
   );

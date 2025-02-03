@@ -1,5 +1,5 @@
 import { sendSetUserCurrencyEvent } from "@enigma-lake/zoot-platform-sdk";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 
 import GroupRow from "../base/GroupRow/GroupRow";
 import InputWithIcon from "../base/InputWithIcon/InputWithIcon";
@@ -12,6 +12,7 @@ import { PLAY_DOUBLE, PLAY_HALVE } from "../types/playController";
 import styles_group from "../base/GroupRow/GroupRow.module.scss";
 import styles_form from "./AutoPlayController.module.scss";
 import { Input } from "../base";
+import { AUTO_PLAY_STATE } from "../types/gameMode";
 
 const AUTO_STOP_DELAY = 1000;
 
@@ -23,10 +24,9 @@ const AutoPlayController = () => {
     setPlayedRounds,
     playedRounds,
     selection,
-    isAutoPlaying,
-    setIsAutoPlaying,
+    setAutoplayState,
+    autoplayState,
   } = useGameState();
-
   const { currentCurrency, currencies } = config.currencyOptions;
   const {
     disabledController,
@@ -43,7 +43,7 @@ const AutoPlayController = () => {
     config.inputStyle ?? {};
 
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [forceStop, setForceStop] = useState(false);
+  const isAutoplayActiveRef = useRef(false);
 
   const stopAutoplay = () => {
     if (playIntervalRef.current) {
@@ -51,41 +51,32 @@ const AutoPlayController = () => {
       playIntervalRef.current = null;
     }
 
-    setForceStop(true);
-    setIsAutoPlaying(false);
+    isAutoplayActiveRef.current = false;
+    setAutoplayState(AUTO_PLAY_STATE.SELECTING);
 
     setTimeout(() => {
       setPlayedRounds(0);
-      setForceStop(false);
     }, AUTO_STOP_DELAY);
   };
 
   const loopRounds = (currentPlayedRounds: number, remainingPlays: number) => {
-    if (forceStop) {
-      return stopAutoplay();
-    }
-
-    if (!isAutoPlaying) {
-      setIsAutoPlaying(true);
-    }
+    if (!isAutoplayActiveRef.current) {
+      return;
+    } // Stop immediately if autoplay is disabled
 
     setPlayedRounds(currentPlayedRounds + 1);
-
-    // If numberOfPlays is 0, keep playing indefinitely until the user stops it
-    if (remainingPlays === 0) {
-      // Continue indefinitely, since numberOfPlays was initially 0
-      setNumberOfPlays(Infinity);
-    }
-
     setNumberOfPlays((prev) => Math.max(prev - 1, 0));
 
-    // Stop autoplay if numberOfPlays becomes 0 after the current round
-    if (remainingPlays === 1 || numberOfPlays === 0) {
-      setIsAutoPlaying(false);
+    if (remainingPlays <= 1 || numberOfPlays === 0) {
+      stopAutoplay();
       return;
     }
 
     config.onAutoPlay(selection, () => {
+      if (!isAutoplayActiveRef.current) {
+        return;
+      } // Check again before setting timeout
+
       playIntervalRef.current = setTimeout(
         () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
         autoPlayDelay,
@@ -94,7 +85,11 @@ const AutoPlayController = () => {
   };
 
   const handlePlay = () => {
-    if (disabledController || selection.length === 0) {
+    if (disabledController) {
+      return;
+    }
+
+    if (selection.length === 0) {
       showToast?.({
         type: "info",
         message: "Please select at least one tile to start autoplay.",
@@ -102,12 +97,15 @@ const AutoPlayController = () => {
       return;
     }
 
+    isAutoplayActiveRef.current = true;
+    setAutoplayState(AUTO_PLAY_STATE.PLAYING);
+
     loopRounds(playedRounds, numberOfPlays);
   };
 
   const canStopAutoplay =
-    (isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays)) ||
-    forceStop;
+    autoplayState === AUTO_PLAY_STATE.PLAYING &&
+    (numberOfPlays === 0 || playedRounds < numberOfPlays);
 
   return (
     <>
@@ -119,7 +117,9 @@ const AutoPlayController = () => {
           onChange={(e) => setNumberOfPlays(Number(e.currentTarget.value))}
           placeholder="Number of Plays"
           min={0}
-          disabled={disabledController || isAutoPlaying}
+          disabled={
+            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+          }
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         />
@@ -134,7 +134,9 @@ const AutoPlayController = () => {
           placeholder={minPlayAmount.toString()}
           max={maxPlayAmount}
           min={minPlayAmount}
-          disabled={disabledController || isAutoPlaying}
+          disabled={
+            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+          }
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -142,7 +144,9 @@ const AutoPlayController = () => {
             currencies={currencies}
             selectedCurrency={currentCurrency}
             setSelectedCurrency={sendSetUserCurrencyEvent}
-            disabled={disabledController || isAutoPlaying}
+            disabled={
+              disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+            }
             backgroundColorHex={backgroundColorHex}
             textColorHex={textColorHex}
           />
@@ -154,7 +158,9 @@ const AutoPlayController = () => {
             setPlayAmount(Math.max(playAmount * PLAY_HALVE, minPlayAmount))
           }
           theme="ghost"
-          disabled={disabledController || isAutoPlaying}
+          disabled={
+            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+          }
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -167,7 +173,9 @@ const AutoPlayController = () => {
             setPlayAmount(Math.min(playAmount * PLAY_DOUBLE, maxPlayAmount))
           }
           theme="ghost"
-          disabled={disabledController || isAutoPlaying}
+          disabled={
+            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+          }
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -177,7 +185,7 @@ const AutoPlayController = () => {
 
       {canStopAutoplay ? (
         <Button
-          disabled={!isAutoPlaying}
+          disabled={autoplayState !== AUTO_PLAY_STATE.PLAYING}
           className={styles_form.buttonCashout}
           onClick={stopAutoplay}
           theme="primary"
@@ -188,7 +196,9 @@ const AutoPlayController = () => {
         </Button>
       ) : (
         <Button
-          disabled={disabledController || isAutoPlaying || forceStop}
+          disabled={
+            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
+          }
           className={styles_form.buttonSweeps}
           onClick={handlePlay}
           theme="primary"
