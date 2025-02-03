@@ -7,6 +7,7 @@ The `PlayController` component is part of a gameplay interface, enabling users t
 ## Component Overview
 
 The `PlayController` allows the user to:
+
 - Select a currency.
 - Adjust the play amount.
 - Start a play.
@@ -27,7 +28,7 @@ npm install @enigma-lake/play-controller-sdk
 ### 2. Import the component and styles in your project:
 
 ```tsx
-import PlayController from '@enigma-lake/play-controller-sdk';
+import PlayController from "@enigma-lake/play-controller-sdk";
 import "@enigma-lake/play-controller-sdk/dist/style.css";
 ```
 
@@ -38,6 +39,7 @@ import "@enigma-lake/play-controller-sdk/dist/style.css";
 The component accepts the following props:
 
 ### 1. `StylingProps`
+
 Handles the styling-related properties for the component.
 
 - **`inputStyle` (optional)**: Custom styling for the input fields.
@@ -45,6 +47,7 @@ Handles the styling-related properties for the component.
   - **`textColorHex`**: Hex color for the input text.
 
 ### 2. `CurrencyProps`
+
 Handles currency-related logic and settings.
 
 - **`currencyOptions`**: An object containing the following properties:
@@ -53,12 +56,14 @@ Handles currency-related logic and settings.
   - **`formatCurrency`**: A function to format the currency value (e.g., `formatCurrency(value, Currency.GOLD)`).
 
 ### 3. `ActionsProps`
+
 Defines functions for the user actions.
 
 - **`onPlay`**: A callback function to trigger when the user starts a play.
 - **`onCashout`**: A callback function to trigger when the user decides to cash out their winnings.
 
 ### 4. `PlaySettingsProps`
+
 Handles game-specific settings and states.
 
 - **`playOptions`**: An object containing the following properties:
@@ -74,7 +79,7 @@ Handles game-specific settings and states.
 
 ```tsx
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
-import PlayController from '@enigma-lake/play-controller-sdk';
+import PlayController from "@enigma-lake/play-controller-sdk";
 import "@enigma-lake/play-controller-sdk/dist/style.css";
 
 const Example = () => {
@@ -84,25 +89,25 @@ const Example = () => {
   const [canCashout, setCanCashout] = useState(false);
 
   const formatCurrency = (value: number, currency: Currency) => {
-    return `${value} ${currency === Currency.SWEEPS ? 'SC' : 'GC'}`;
+    return `${value} ${currency === Currency.SWEEPS ? "SC" : "GC"}`;
   };
 
   const playHook = () => ({
     playAmount,
     playLimits: {
       [Currency.SWEEPS]: { limits: { min: 0.5, max: 100 } },
-      [Currency.GOLD]: { limits: { min: 1, max: 50 } }
+      [Currency.GOLD]: { limits: { min: 1, max: 50 } },
     },
     setPlayAmount,
   });
 
   const onPlay = () => {
-    console.log('Play Started!');
+    console.log("Play Started!");
     setIsPlaying(true);
   };
 
   const onCashout = () => {
-    console.log('Cashout!');
+    console.log("Cashout!");
     setCanCashout(false);
   };
 
@@ -136,14 +141,17 @@ const Example = () => {
 ## Key Features
 
 1. **Dynamic Currency Handling**:
+
    - Supports multiple currencies (e.g., SWEEPS, GOLD).
    - Allows users to switch currencies easily.
 
 2. **Play Amount Adjustment**:
+
    - Includes buttons to halve or double the play amount.
    - Validates play amounts against user balance and play limits.
 
 3. **Custom Styling**:
+
    - Supports customizable input and button colors.
 
 4. **Play & Cashout Actions**:
@@ -154,6 +162,7 @@ const Example = () => {
 ## Development Notes
 
 1. **Play Amount Validation**:
+
    - The play amount is validated to ensure it falls within the minimum and maximum limits, as well as the user's available balance.
 
 2. **Responsive Design**:

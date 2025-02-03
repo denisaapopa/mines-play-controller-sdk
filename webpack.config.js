@@ -1,44 +1,44 @@
-const path = require('path');
+import path from "path";
 
 module.exports = {
-  entry: './src/index.ts',  
+  entry: "./src/index.ts",
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
-    library: 'play-controller-sdk',  
-    libraryTarget: 'umd',  
-    globalObject: 'this',  
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.js",
+    library: "play-controller-sdk",
+    libraryTarget: "umd",
+    globalObject: "this",
   },
-  mode: 'production',  
+  mode: "production",
   module: {
     rules: [
       {
-        test: /\.tsx?$/,  //
-        use: 'ts-loader', 
+        test: /\.tsx?$/, //
+        use: "ts-loader",
         exclude: /node_modules/,
       },
       {
         test: /\.module\.scss$/,
         use: [
-          'style-loader', 
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               modules: {
-                localIdentName: '[name]__[local]___[hash:base64:5]', // Scoped class names
+                localIdentName: "[name]__[local]___[hash:base64:5]", // Scoped class names
               },
             },
           },
-          'sass-loader',
+          "sass-loader",
         ],
-      }
+      },
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.scss'], 
+    extensions: [".ts", ".tsx", ".js", ".scss"],
   },
   externals: {
-    react: 'react',
-    'react-dom': 'react-dom',
+    react: "react",
+    "react-dom": "react-dom",
   },
 };

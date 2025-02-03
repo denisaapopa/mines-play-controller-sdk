@@ -1,0 +1,72 @@
+@use "../common.scss" as *;
+
+.buttonCashout {
+  background: #7f44c3 !important;
+
+  &:hover,
+  &:active {
+    background: #9f5eeb !important;
+  }
+  box-shadow:
+    inset 0px -2px 0px #7f44c3,
+    inset 0px 1px 0px #9f5eeb;
+}
+
+.buttonSweeps {
+  background: #10be68;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #1ae380;
+  }
+  box-shadow:
+    inset 0px -2px 0px #10be68,
+    inset 0px 1px 0px #1ae380;
+}
+
+.buttonGold {
+  background: #bf9e21 !important;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #f0c72c !important;
+  }
+  box-shadow:
+    inset 0px -2px 0px #bf9e21,
+    inset 0px 1px 0px #bf9e21;
+}
+
+.cashoutButton {
+  background: #7f44c3 !important;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #9f5eeb !important;
+  }
+  box-shadow:
+    inset 0px -2px 0px #7f44c3,
+    inset 0px 1px 0px #9f5eeb;
+}
+
+.group {
+  margin-bottom: 20px;
+  width: 100%;
+
+  @include breakpoint("md") {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  @include breakpoint("sm") {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+}
+
+.x2 {
+  display: block;
+  min-width: 24px;
+  min-height: 24px;
+}
