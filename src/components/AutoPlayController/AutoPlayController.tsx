@@ -61,7 +61,7 @@ const AutoPlayController = () => {
   };
 
   const loopRounds = (currentPlayedRounds: number, remainingPlays: number) => {
-    if (forceStop || remainingPlays <= 0) {
+    if (forceStop) {
       return stopAutoplay();
     }
 
@@ -70,7 +70,20 @@ const AutoPlayController = () => {
     }
 
     setPlayedRounds(currentPlayedRounds + 1);
+
+    // If numberOfPlays is 0, keep playing indefinitely until the user stops it
+    if (remainingPlays === 0) {
+      // Continue indefinitely, since numberOfPlays was initially 0
+      setNumberOfPlays(Infinity);
+    }
+
     setNumberOfPlays((prev) => Math.max(prev - 1, 0));
+
+    // Stop autoplay if numberOfPlays becomes 0 after the current round
+    if (remainingPlays === 1 || numberOfPlays === 0) {
+      setIsAutoPlaying(false);
+      return;
+    }
 
     config.onAutoPlay(selection, () => {
       playIntervalRef.current = setTimeout(
@@ -101,7 +114,7 @@ const AutoPlayController = () => {
       <GroupRow className={styles_group.group}>
         <Input
           className={styles_group.groupItem}
-          value={numberOfPlays}
+          value={numberOfPlays === Infinity ? 0 : numberOfPlays}
           type="number"
           onChange={(e) => setNumberOfPlays(Number(e.currentTarget.value))}
           placeholder="Number of Plays"
