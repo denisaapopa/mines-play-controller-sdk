@@ -1,4 +1,7 @@
-import { sendSetUserCurrencyEvent } from "@enigma-lake/zoot-platform-sdk";
+import {
+  Currency,
+  sendSetUserCurrencyEvent,
+} from "@enigma-lake/zoot-platform-sdk";
 import { useRef } from "react";
 
 import GroupRow from "../base/GroupRow/GroupRow";
@@ -46,12 +49,12 @@ const AutoPlayController = () => {
   const isAutoplayActiveRef = useRef(false);
 
   const stopAutoplay = () => {
+    isAutoplayActiveRef.current = false;
     if (playIntervalRef.current) {
       clearTimeout(playIntervalRef.current);
       playIntervalRef.current = null;
     }
 
-    isAutoplayActiveRef.current = false;
     setAutoplayState(AUTO_PLAY_STATE.SELECTING);
 
     setTimeout(() => {
@@ -199,7 +202,11 @@ const AutoPlayController = () => {
           disabled={
             disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
           }
-          className={styles_form.buttonSweeps}
+          className={
+            currentCurrency === Currency.GOLD
+              ? styles_form.buttonGold
+              : styles_form.buttonSweeps
+          }
           onClick={handlePlay}
           theme="primary"
           backgroundColorHex={backgroundColorHex}
