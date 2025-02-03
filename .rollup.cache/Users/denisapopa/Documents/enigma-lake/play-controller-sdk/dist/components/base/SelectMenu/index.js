@@ -1,2 +1,2 @@
-export { default } from './SelectMenu';
+export { default } from "./SelectMenu";
 //# sourceMappingURL=index.js.map

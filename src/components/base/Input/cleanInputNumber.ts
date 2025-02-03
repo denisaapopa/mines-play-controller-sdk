@@ -27,7 +27,8 @@ export function cleanInputNumber(value: string) {
     const afterSeparator = trimmed.slice(separatorIndex + 1);
     const cleanedBeforeSeparator = beforeSeparator.replace(/[,.]/g, "");
     const cleanedAfterSeparator = afterSeparator.replace(/[,.]/g, "");
-    return `${cleanedBeforeSeparator.length === 0 ? "0" : cleanedBeforeSeparator
-      }.${cleanedAfterSeparator}`;
+    return `${
+      cleanedBeforeSeparator.length === 0 ? "0" : cleanedBeforeSeparator
+    }.${cleanedAfterSeparator}`;
   }
 }

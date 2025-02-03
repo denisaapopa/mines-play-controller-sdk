@@ -4,31 +4,31 @@ import typescript from "@rollup/plugin-typescript";
 import { dts } from "rollup-plugin-dts";
 
 import postcss from "rollup-plugin-postcss";
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import babel from '@rollup/plugin-babel';
+import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import babel from "@rollup/plugin-babel";
 import del from "rollup-plugin-delete";
 
-const packageJson = require("./package.json");
+import packageJson from "./package.json";
 
 const external = Object.keys(packageJson.devDependencies || {}).concat(
   Object.keys(packageJson.peerDependencies || {}),
-  ['react', 'react-dom'] // Ensure React and ReactDOM are always treated as external
+  ["react", "react-dom"], // Ensure React and ReactDOM are always treated as external
 );
 
 // Custom plugin to append the CSS import to the JS files
 const injectCSSImport = () => {
   return {
-    name: 'inject-css-import',
+    name: "inject-css-import",
     generateBundle(options, bundle) {
       const cssImportStatement = `import './style.css';\n`;
 
-      Object.keys(bundle).forEach(fileName => {
-        if (fileName.endsWith('.js')) {
+      Object.keys(bundle).forEach((fileName) => {
+        if (fileName.endsWith(".js")) {
           const chunk = bundle[fileName];
           chunk.code = cssImportStatement + chunk.code;
         }
       });
-    }
+    },
   };
 };
 
@@ -51,12 +51,12 @@ export default [
       del({ targets: "dist/*" }),
       peerDepsExternal(),
       resolve({
-        extensions: ['.ts', '.tsx', '.js'],
+        extensions: [".ts", ".tsx", ".js"],
       }),
       commonjs(),
       babel({
-        exclude: 'node_modules/**',
-        babelHelpers: 'bundled'
+        exclude: "node_modules/**",
+        babelHelpers: "bundled",
       }),
       typescript({ tsconfig: "./tsconfig.json" }),
       postcss({
@@ -74,10 +74,7 @@ export default [
   {
     input: "dist/index.d.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
-    plugins: [
-      dts(),
-      del({ targets: "dist/tsconfig.tsbuildinfo" }),
-    ],
+    plugins: [dts(), del({ targets: "dist/tsconfig.tsbuildinfo" })],
     external: [/\.(css|less|scss)$/, "react", "react-dom"],
-  }
+  },
 ];

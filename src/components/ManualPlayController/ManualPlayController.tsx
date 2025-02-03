@@ -12,14 +12,14 @@ import Button from "../base/Button";
 import { useGameState } from "../GameState/GameStateContext";
 import { PLAY_DOUBLE, PLAY_HALVE } from "../types/playController";
 
-import styles_group from "../base/GroupRow/GroupRow.module.scss"
-import styles_form from './ManualPlayController.module.scss';
-
+import styles_group from "../base/GroupRow/GroupRow.module.scss";
+import styles_form from "./ManualPlayController.module.scss";
 
 const ManualPlayController = () => {
   const { config } = useGameState();
   const { currentCurrency, currencies, winText } = config.currencyOptions;
-  const { isPlaying, canCashout, disabledController, playHook } = config.playOptions;
+  const { isPlaying, canCashout, disabledController, playHook } =
+    config.playOptions;
 
   const { playAmount, playLimits, setPlayAmount } = playHook?.();
   const minPlayAmount = playLimits?.[currentCurrency].limits.min ?? 0;
@@ -28,53 +28,36 @@ const ManualPlayController = () => {
   const backgroundColorHex = config.inputStyle?.backgroundColorHex ?? "#ffff";
   const textColorHex = config.inputStyle?.textColorHex ?? "#ffff";
 
-  const onMinusClick = () => {
-    if (disabledController) {
-      return;
-    }
-    const newPlayAmount = Number((playAmount * PLAY_HALVE).toFixed(2));
-    setPlayAmount(Math.max(newPlayAmount, minPlayAmount));
-  };
+  const isDisabled = () => disabledController || isPlaying;
 
-  const onPlusClick = () => {
-    if (disabledController) {
+  const adjustPlayAmount = (multiplier: number) => {
+    if (isDisabled()) {
       return;
     }
-    const newPlayAmount = Number((playAmount * PLAY_DOUBLE).toFixed(2));
-    setPlayAmount(Math.min(newPlayAmount, maxPlayAmount));
-  };
-
-  const onClearAmountClick = () => {
-    if (disabledController) {
-      return;
-    }
-    setPlayAmount(minPlayAmount);
+    const newAmount = Math.max(
+      minPlayAmount,
+      Math.min(playAmount * multiplier, maxPlayAmount),
+    );
+    setPlayAmount(Number(newAmount.toFixed(2)));
   };
 
   const onChangeAmount = (event: ChangeEvent<HTMLInputElement>) => {
-    if (disabledController) {
+    if (isDisabled()) {
       return;
     }
     setPlayAmount(Number(event.currentTarget.value));
   };
 
   const onBlurAmount = (event: FocusEvent<HTMLInputElement>) => {
-    if (disabledController) {
+    if (isDisabled()) {
       return;
     }
-    const newPlayAmount = Number(event.currentTarget.value);
-    if (newPlayAmount < minPlayAmount) {
-      setPlayAmount(minPlayAmount);
-    } else if (newPlayAmount > maxPlayAmount) {
-      setPlayAmount(maxPlayAmount);
-    } else {
-      setPlayAmount(newPlayAmount);
-    }
+    const newAmount = Number(event.currentTarget.value);
+    setPlayAmount(Math.max(minPlayAmount, Math.min(newAmount, maxPlayAmount)));
   };
 
-  const validatePlayAmount = (amount: number) => {
-    return amount >= minPlayAmount && amount <= maxPlayAmount;
-  };
+  const isValidPlayAmount =
+    playAmount >= minPlayAmount && playAmount <= maxPlayAmount;
 
   return (
     <>
@@ -83,13 +66,13 @@ const ManualPlayController = () => {
           className={styles_group.groupItem}
           value={playAmount}
           type="number"
-          onClear={onClearAmountClick}
+          onClear={() => !isDisabled() && setPlayAmount(minPlayAmount)}
           onChange={onChangeAmount}
           onBlur={onBlurAmount}
           placeholder={minPlayAmount.toString()}
           max={maxPlayAmount}
           min={minPlayAmount}
-          disabled={disabledController || isPlaying}
+          disabled={isDisabled()}
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -97,16 +80,16 @@ const ManualPlayController = () => {
             currencies={currencies}
             selectedCurrency={currentCurrency}
             setSelectedCurrency={sendSetUserCurrencyEvent}
-            disabled={disabledController || isPlaying}
+            disabled={isDisabled()}
             backgroundColorHex={backgroundColorHex}
             textColorHex={textColorHex}
           />
         </InputWithIcon>
         <Button
           className={styles_group.groupItem}
-          onClick={onMinusClick}
+          onClick={() => adjustPlayAmount(PLAY_HALVE)}
           theme="ghost"
-          disabled={disabledController || isPlaying}
+          disabled={isDisabled()}
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -114,9 +97,9 @@ const ManualPlayController = () => {
         </Button>
         <Button
           className={styles_group.groupItem}
-          onClick={onPlusClick}
+          onClick={() => adjustPlayAmount(PLAY_DOUBLE)}
           theme="ghost"
-          disabled={disabledController || isPlaying}
+          disabled={isDisabled()}
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
         >
@@ -124,40 +107,34 @@ const ManualPlayController = () => {
         </Button>
       </GroupRow>
 
-      {
-        canCashout ? (
-          <Button
-            disabled={disabledController || !isPlaying}
-            className={styles_form.buttonCashout}
-            onClick={config.onCashout}
-            theme="primary"
-            backgroundColorHex={backgroundColorHex}
-            textColorHex={textColorHex}
-          >
-            Cashout {winText}
-          </Button>
-        ) : (
-          <Button
-            disabled={
-              disabledController || isPlaying ||
-              !validatePlayAmount(playAmount)
-            }
-            className={
-              currentCurrency === Currency.GOLD
-                ? styles_form.buttonGold
-                : styles_form.buttonSweeps
-            }
-            onClick={() => config.onPlay()}
-            theme="primary"
-            backgroundColorHex={backgroundColorHex}
-            textColorHex={textColorHex}
-          >
-            Play now
-          </Button>
-        )
-      }
+      {canCashout ? (
+        <Button
+          disabled={disabledController || !isPlaying}
+          className={styles_form.buttonCashout}
+          onClick={config.onCashout}
+          theme="primary"
+          backgroundColorHex={backgroundColorHex}
+          textColorHex={textColorHex}
+        >
+          Cashout {winText}
+        </Button>
+      ) : (
+        <Button
+          disabled={isDisabled() || !isValidPlayAmount}
+          className={
+            currentCurrency === Currency.GOLD
+              ? styles_form.buttonGold
+              : styles_form.buttonSweeps
+          }
+          onClick={config.onPlay}
+          theme="primary"
+          backgroundColorHex={backgroundColorHex}
+          textColorHex={textColorHex}
+        >
+          Play now
+        </Button>
+      )}
     </>
-
   );
 };
 

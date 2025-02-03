@@ -1,5 +1,10 @@
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
 import React from "react";
 
 import styles from "./SelectMenu.module.scss";
@@ -23,7 +28,6 @@ const SelectMenu = ({
   backgroundColorHex,
   disabled = false,
 }: ISelectMenuProps) => {
-
   const handleOnChange = (newCurrency: Currency) => {
     if (disabled) {
       return;

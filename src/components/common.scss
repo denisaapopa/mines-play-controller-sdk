@@ -1,16 +1,15 @@
 @mixin breakpoint($breakpoint) {
-    @if $breakpoint == "sm" {
-      @media (max-width: 449px) {
-        @content;
-      }
-    } @else if $breakpoint == "md" {
-      @media (max-width: 450px) {
-        @content;
-      }
-    } @else if $breakpoint == "xl" {
-      @media (min-width: 600px) {
-        @content;
-      }
+  @if $breakpoint == "sm" {
+    @media (max-width: 449px) {
+      @content;
+    }
+  } @else if $breakpoint == "md" {
+    @media (max-width: 450px) {
+      @content;
+    }
+  } @else if $breakpoint == "xl" {
+    @media (min-width: 600px) {
+      @content;
     }
   }
-  
+}

@@ -1,2 +1,2 @@
-export { default } from './AutoPlayController';
+export { default } from "./AutoPlayController";
 //# sourceMappingURL=index.js.map

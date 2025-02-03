@@ -1,1 +1,1 @@
-export { default } from './AutoPlayController';
+export { default } from "./AutoPlayController";

@@ -55,6 +55,6 @@ const InputWithIcon = ({
       )}
     </div>
   );
-}
+};
 
 export default InputWithIcon;

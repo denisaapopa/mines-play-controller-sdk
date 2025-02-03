@@ -7,7 +7,6 @@ import { hexToRgb } from "../../utils";
 
 import styles from "./Input.module.scss";
 
-
 declare type ValueOf<T> = T[keyof T];
 
 export const types = {
@@ -26,11 +25,18 @@ export type Props = React.ComponentProps<"input"> & {
   textColorHex: string;
 };
 
-const  Input = ({ className, onChange, type, backgroundColorHex, textColorHex, ...restProps }: Props) => {
+const Input = ({
+  className,
+  onChange,
+  type,
+  backgroundColorHex,
+  textColorHex,
+  ...restProps
+}: Props) => {
   const handleChange = (() => {
     if (type === "number") {
       return function handleChangeNumber(
-        event: React.ChangeEvent<HTMLInputElement>
+        event: React.ChangeEvent<HTMLInputElement>,
       ) {
         const { value } = event.target;
         event.target.value = cleanInputNumber(value);
@@ -40,7 +46,7 @@ const  Input = ({ className, onChange, type, backgroundColorHex, textColorHex, .
 
     if (type === "integer") {
       return function handleChangeInteger(
-        event: React.ChangeEvent<HTMLInputElement>
+        event: React.ChangeEvent<HTMLInputElement>,
       ) {
         const { value } = event.target;
         event.target.value = cleanInputInteger(value);
@@ -63,6 +69,6 @@ const  Input = ({ className, onChange, type, backgroundColorHex, textColorHex, .
       }
     />
   );
-}
+};
 
 export default Input;

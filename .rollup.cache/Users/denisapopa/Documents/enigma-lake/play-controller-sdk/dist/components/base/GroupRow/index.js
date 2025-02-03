@@ -1,2 +1,2 @@
-export { default } from './GroupRow';
+export { default } from "./GroupRow";
 //# sourceMappingURL=index.js.map

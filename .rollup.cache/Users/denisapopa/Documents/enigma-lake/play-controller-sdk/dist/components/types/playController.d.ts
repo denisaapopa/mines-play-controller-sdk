@@ -21,7 +21,7 @@ export type PlaySettingsProps = {
     disabledController: boolean;
     displayController: boolean;
     showToast: (props: {
-        type: 'success' | 'error' | 'warning' | 'info';
+        type: "success" | "error" | "warning" | "info";
         message: string;
     }) => void;
     playHook: () => {

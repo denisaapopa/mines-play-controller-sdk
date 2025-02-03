@@ -1,8 +1,5 @@
-import {
-  Currency,
-  sendSetUserCurrencyEvent,
-} from "@enigma-lake/zoot-platform-sdk";
-import { ChangeEvent, FocusEvent, useState, useRef } from "react";
+import { sendSetUserCurrencyEvent } from "@enigma-lake/zoot-platform-sdk";
+import { useState, useRef } from "react";
 
 import GroupRow from "../base/GroupRow/GroupRow";
 import InputWithIcon from "../base/InputWithIcon/InputWithIcon";
@@ -16,6 +13,8 @@ import styles_group from "../base/GroupRow/GroupRow.module.scss";
 import styles_form from "./AutoPlayController.module.scss";
 import { Input } from "../base";
 
+const AUTO_STOP_DELAY = 1000;
+
 const AutoPlayController = () => {
   const {
     config,
@@ -27,64 +26,24 @@ const AutoPlayController = () => {
     isAutoPlaying,
     setIsAutoPlaying,
   } = useGameState();
+
   const { currentCurrency, currencies } = config.currencyOptions;
-  const { disabledController, playHook, showToast, autoPlayDelay = 1500 } = config.playOptions;
+  const {
+    disabledController,
+    playHook,
+    showToast,
+    autoPlayDelay = 1500,
+  } = config.playOptions;
 
-  const { playAmount, playLimits, setPlayAmount } = playHook?.();
-  const minPlayAmount = playLimits?.[currentCurrency].limits.min ?? 0;
-  const maxPlayAmount = playLimits?.[currentCurrency].limits.max ?? 0;
+  const { playAmount, playLimits, setPlayAmount } = playHook?.() ?? {};
+  const minPlayAmount = playLimits?.[currentCurrency]?.limits.min ?? 0;
+  const maxPlayAmount = playLimits?.[currentCurrency]?.limits.max ?? 0;
 
-  const backgroundColorHex = config.inputStyle?.backgroundColorHex ?? "#ffff";
-  const textColorHex = config.inputStyle?.textColorHex ?? "#ffff";
+  const { backgroundColorHex = "#ffff", textColorHex = "#ffff" } =
+    config.inputStyle ?? {};
 
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const [forceStop, setForceStop] = useState(false);
-
-  const handlePlay = () => {
-    if (disabledController) return;
-
-    if (selection.length === 0) {
-      showToast({
-        type: "info",
-        message: "Please select at least one tile to start autoplay.",
-      });
-      return;
-    }
-
-    setForceStop(false);
-
-    let currentPlayedRounds = playedRounds;
-    let remainingPlays = numberOfPlays; // Track the decreasing value
-
-    const loopRounds = () => {
-      if (forceStop) {
-        return;
-      }
-
-      if (remainingPlays === 0 || currentPlayedRounds < remainingPlays) {
-        if (!isAutoPlaying) {
-          setIsAutoPlaying(true);
-        }
-
-        currentPlayedRounds += 1;
-        setPlayedRounds(currentPlayedRounds);
-
-        if (numberOfPlays > 0) {
-          setNumberOfPlays((prev) => Math.max(prev - 1, 0)); // Decrease but not below 0
-        }
-
-        config.onAutoPlay(selection, () => {
-          playIntervalRef.current = setTimeout(loopRounds, autoPlayDelay);
-        });
-      } else {
-        stopAutoplay();
-      }
-    };
-
-    loopRounds();
-  };
-
 
   const stopAutoplay = () => {
     if (playIntervalRef.current) {
@@ -93,16 +52,49 @@ const AutoPlayController = () => {
     }
 
     setForceStop(true);
-    
-    // Reset forceStop after a delay (e.g., 3 seconds)
+    setIsAutoPlaying(false);
+
     setTimeout(() => {
       setPlayedRounds(0);
       setForceStop(false);
-      setIsAutoPlaying(false);
-    }, 1000);
+    }, AUTO_STOP_DELAY);
   };
 
-  const canStopAutoplay = isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays) || forceStop;
+  const loopRounds = (currentPlayedRounds: number, remainingPlays: number) => {
+    if (forceStop || remainingPlays <= 0) {
+      return stopAutoplay();
+    }
+
+    if (!isAutoPlaying) {
+      setIsAutoPlaying(true);
+    }
+
+    setPlayedRounds(currentPlayedRounds + 1);
+    setNumberOfPlays((prev) => Math.max(prev - 1, 0));
+
+    config.onAutoPlay(selection, () => {
+      playIntervalRef.current = setTimeout(
+        () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
+        autoPlayDelay,
+      );
+    });
+  };
+
+  const handlePlay = () => {
+    if (disabledController || selection.length === 0) {
+      showToast?.({
+        type: "info",
+        message: "Please select at least one tile to start autoplay.",
+      });
+      return;
+    }
+
+    loopRounds(playedRounds, numberOfPlays);
+  };
+
+  const canStopAutoplay =
+    (isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays)) ||
+    forceStop;
 
   return (
     <>
@@ -119,6 +111,7 @@ const AutoPlayController = () => {
           textColorHex={textColorHex}
         />
       </GroupRow>
+
       <GroupRow className={styles_group.group}>
         <InputWithIcon
           className={styles_group.groupItem}
@@ -141,9 +134,12 @@ const AutoPlayController = () => {
             textColorHex={textColorHex}
           />
         </InputWithIcon>
+
         <Button
           className={styles_group.groupItem}
-          onClick={() => setPlayAmount(Math.max(playAmount * PLAY_HALVE, minPlayAmount))}
+          onClick={() =>
+            setPlayAmount(Math.max(playAmount * PLAY_HALVE, minPlayAmount))
+          }
           theme="ghost"
           disabled={disabledController || isAutoPlaying}
           backgroundColorHex={backgroundColorHex}
@@ -151,9 +147,12 @@ const AutoPlayController = () => {
         >
           -
         </Button>
+
         <Button
           className={styles_group.groupItem}
-          onClick={() => setPlayAmount(Math.min(playAmount * PLAY_DOUBLE, maxPlayAmount))}
+          onClick={() =>
+            setPlayAmount(Math.min(playAmount * PLAY_DOUBLE, maxPlayAmount))
+          }
           theme="ghost"
           disabled={disabledController || isAutoPlaying}
           backgroundColorHex={backgroundColorHex}

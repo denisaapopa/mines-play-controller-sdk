@@ -10,7 +10,10 @@
   "scripts": {
     "build": "tsc && rollup -c --bundleConfigAsCjs",
     "start": "webpack serve --mode development --open",
-    "lint": "eslint ."
+    "eslint": "eslint --cache --fix .",
+    "eslint:check": "eslint .",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -56,6 +59,7 @@
     "eslint-plugin-storybook": "^0.11.2",
     "mini-css-extract-plugin": "^2.9.2",
     "prettier": "^3.4.2",
+    "react-switch": "^7.1.0",
     "rollup": "^4.30.1",
     "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-dts": "^6.1.1",
@@ -69,7 +73,6 @@
     "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0",
-    "react-switch": "^7.1.0"
+    "webpack-dev-server": "^5.2.0"
   }
 }

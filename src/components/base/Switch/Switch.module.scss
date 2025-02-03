@@ -1,4 +1,48 @@
 .base {
-    display: flex;
+  display: inline-flex;
+  align-items: center;
+}
+.switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px; // Adjust width of the switch container
+  height: 34px; // Adjust height of the switch container
+  padding: 4px;
+  border-radius: 9999px; // Fully rounded for the container
+  background-color: #e5e5e5; // Default background color (off state)
+  transition: background-color 0.3s ease; // Smooth background color transition
+  cursor: pointer;
+  border: none;
+  outline: none;
+
+  &.blue {
+    background-color: #3b82f6; // Background color when switch is on
+  }
+
+  &.gray {
+    background-color: #e5e5e5; // Background color when switch is off
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    background-color: #d1d5db; // Lighter background for disabled state
+  }
 }
 
+.base .thumb {
+  position: absolute;
+  top: 50%;
+  left: 4px; // Initial position of the thumb when off
+  transform: translateY(-50%);
+  width: 26px; // Size of the thumb
+  height: 26px; // Size of the thumb
+  background-color: white; // Thumb color
+  border-radius: 50%; // Fully rounded thumb
+  transition: transform 0.3s ease; // Smooth transition for thumb movement
+}
+
+.base .thumb.move-right {
+  transform: translateY(-50%) translateX(26px); // Move thumb to the right when on
+}

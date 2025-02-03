@@ -14,6 +14,6 @@ const GroupRow = ({ className, children, label, ...restProps }: Props) => {
       <div className={styles.group}>{children}</div>
     </div>
   );
-}
+};
 
 export default GroupRow;

@@ -1,2 +1,2 @@
-export { default } from './GameStateProvider';
+export { default } from "./GameStateProvider";
 //# sourceMappingURL=index.js.map

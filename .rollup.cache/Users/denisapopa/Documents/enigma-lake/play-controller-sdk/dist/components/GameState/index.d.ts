@@ -1,1 +1,1 @@
-export { default } from './GameStateProvider';
+export { default } from "./GameStateProvider";

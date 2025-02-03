@@ -1,9 +1,8 @@
 import cx from "classnames";
-import React from 'react';
+import React from "react";
 
 import { hexToRgb } from "../../utils";
 import styles from "./Button.module.scss";
-
 
 export const themes = {
   primary: "primary",
@@ -21,7 +20,7 @@ export type Props = React.ComponentProps<"button"> & {
   textColorHex: string;
 };
 
- const Button = ({backgroundColorHex, textColorHex, ...props}: Props) => {
+const Button = ({ backgroundColorHex, textColorHex, ...props }: Props) => {
   return (
     <button
       {...props}
@@ -29,7 +28,7 @@ export type Props = React.ComponentProps<"button"> & {
         styles.base,
         styles[`base__theme-${props.theme ?? DEFAULT_THEME}`],
         props.disabled && styles[`base__state-disabled`],
-        props.className
+        props.className,
       )}
       style={
         {
@@ -39,7 +38,7 @@ export type Props = React.ComponentProps<"button"> & {
       }
     />
   );
-}
+};
 
 Button.themes = themes;
 Button.defaultTheme = DEFAULT_THEME;
