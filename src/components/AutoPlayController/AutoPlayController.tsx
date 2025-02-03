@@ -14,7 +14,6 @@ import { PLAY_DOUBLE, PLAY_HALVE } from "../types/playController";
 
 import styles_group from "../base/GroupRow/GroupRow.module.scss";
 import styles_form from "./AutoPlayController.module.scss";
-import { Input } from "../base";
 import { AUTO_PLAY_STATE } from "../types/gameMode";
 
 const AUTO_STOP_DELAY = 1000;
@@ -65,20 +64,21 @@ const AutoPlayController = () => {
   const loopRounds = (currentPlayedRounds: number, remainingPlays: number) => {
     if (!isAutoplayActiveRef.current) {
       return;
-    } // Stop immediately if autoplay is disabled
+    }
 
-    setPlayedRounds(currentPlayedRounds + 1);
-    setNumberOfPlays((prev) => Math.max(prev - 1, 0));
-
-    if (remainingPlays <= 1 || numberOfPlays === 0) {
+    if (remainingPlays < 1 || numberOfPlays === 0) {
+      setNumberOfPlays(Infinity);
       stopAutoplay();
       return;
     }
 
+    setPlayedRounds(currentPlayedRounds + 1);
+    setNumberOfPlays((prev) => Math.max(prev - 1, 0));
+
     config.onAutoPlay(selection, () => {
       if (!isAutoplayActiveRef.current) {
         return;
-      } // Check again before setting timeout
+      }
 
       playIntervalRef.current = setTimeout(
         () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
@@ -106,14 +106,10 @@ const AutoPlayController = () => {
     loopRounds(playedRounds, numberOfPlays);
   };
 
-  const canStopAutoplay =
-    autoplayState === AUTO_PLAY_STATE.PLAYING &&
-    (numberOfPlays === 0 || playedRounds < numberOfPlays);
-
   return (
     <>
       <GroupRow className={styles_group.group}>
-        <Input
+        <InputWithIcon
           className={styles_group.groupItem}
           value={numberOfPlays === Infinity ? 0 : numberOfPlays}
           type="number"
@@ -125,7 +121,17 @@ const AutoPlayController = () => {
           }
           backgroundColorHex={backgroundColorHex}
           textColorHex={textColorHex}
-        />
+        >
+          {numberOfPlays === Infinity ? (
+            <svg
+              fill="currentColor"
+              viewBox="0 0 64 64"
+              className={styles_group.svg_icon}
+            >
+              <path d="M47.746 15.695c-9.287 0-13.851 7.073-17.908 13.345-4.377 6.752-7.473 10.836-13.531 10.836a7.846 7.846 0 0 1-7.847-7.847 7.845 7.845 0 0 1 7.847-7.846 9.29 9.29 0 0 1 6.915 2.669l1.014-1.549c1.094-1.708 2.349-3.602 3.79-5.524a17.365 17.365 0 0 0-11.743-4.084h.024C7.302 15.695 0 22.998 0 32.002 0 41.007 7.302 48.31 16.307 48.31c11.103 0 16.387-8.006 20.63-14.705 3.79-5.872 6.352-9.448 10.81-9.448a7.846 7.846 0 0 1 7.846 7.846 7.846 7.846 0 0 1-7.847 7.847 9.27 9.27 0 0 1-5.791-1.78l.027.018a65.172 65.172 0 0 1-5.047 6.937l.082-.104a17.38 17.38 0 0 0 10.358 3.392c.113 0 .225 0 .334-.003h-.016C56.698 48.31 64 41.007 64 32.002c0-9.004-7.302-16.307-16.307-16.307h.053Z"></path>
+            </svg>
+          ) : null}
+        </InputWithIcon>
       </GroupRow>
 
       <GroupRow className={styles_group.group}>
@@ -186,7 +192,7 @@ const AutoPlayController = () => {
         </Button>
       </GroupRow>
 
-      {canStopAutoplay ? (
+      {autoplayState === AUTO_PLAY_STATE.PLAYING ? (
         <Button
           disabled={autoplayState !== AUTO_PLAY_STATE.PLAYING}
           className={styles_form.buttonCashout}
@@ -199,9 +205,7 @@ const AutoPlayController = () => {
         </Button>
       ) : (
         <Button
-          disabled={
-            disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING
-          }
+          disabled={disabledController}
           className={
             currentCurrency === Currency.GOLD
               ? styles_form.buttonGold
