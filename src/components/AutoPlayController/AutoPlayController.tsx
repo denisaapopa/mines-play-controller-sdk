@@ -39,9 +39,11 @@ const AutoPlayController = () => {
 
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [forceStop, setForceStop] = useState(false);
+
   const handlePlay = () => {
     if (disabledController) return;
-  
+
     if (selection.length === 0) {
       showToast({
         type: "info",
@@ -49,23 +51,29 @@ const AutoPlayController = () => {
       });
       return;
     }
-  
+
+    setForceStop(false);
+
     let currentPlayedRounds = playedRounds;
     let remainingPlays = numberOfPlays; // Track the decreasing value
-  
+
     const loopRounds = () => {
+      if (forceStop) {
+        return;
+      }
+
       if (remainingPlays === 0 || currentPlayedRounds < remainingPlays) {
         if (!isAutoPlaying) {
           setIsAutoPlaying(true);
         }
-  
+
         currentPlayedRounds += 1;
         setPlayedRounds(currentPlayedRounds);
-  
+
         if (numberOfPlays > 0) {
           setNumberOfPlays((prev) => Math.max(prev - 1, 0)); // Decrease but not below 0
         }
-  
+
         config.onAutoPlay(selection, () => {
           playIntervalRef.current = setTimeout(loopRounds, autoPlayDelay);
         });
@@ -73,23 +81,28 @@ const AutoPlayController = () => {
         stopAutoplay();
       }
     };
-  
+
     loopRounds();
   };
-  
+
 
   const stopAutoplay = () => {
     if (playIntervalRef.current) {
       clearTimeout(playIntervalRef.current);
       playIntervalRef.current = null;
     }
-  
-    setIsAutoPlaying(false);
-    setPlayedRounds(0);
-  };
-  
 
-  const canStopAutoplay = isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays);
+    setForceStop(true);
+    
+    // Reset forceStop after a delay (e.g., 3 seconds)
+    setTimeout(() => {
+      setPlayedRounds(0);
+      setForceStop(false);
+      setIsAutoPlaying(false);
+    }, 1000);
+  };
+
+  const canStopAutoplay = isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays) || forceStop;
 
   return (
     <>
@@ -163,7 +176,7 @@ const AutoPlayController = () => {
         </Button>
       ) : (
         <Button
-          disabled={disabledController || isAutoPlaying}
+          disabled={disabledController || isAutoPlaying || forceStop}
           className={styles_form.buttonSweeps}
           onClick={handlePlay}
           theme="primary"

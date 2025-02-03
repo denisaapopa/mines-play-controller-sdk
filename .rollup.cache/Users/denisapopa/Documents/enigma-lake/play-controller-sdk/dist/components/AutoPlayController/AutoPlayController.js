@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { sendSetUserCurrencyEvent, } from "@enigma-lake/zoot-platform-sdk";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import GroupRow from "../base/GroupRow/GroupRow";
 import InputWithIcon from "../base/InputWithIcon/InputWithIcon";
 import SelectMenu from "../base/SelectMenu";
@@ -20,6 +20,7 @@ const AutoPlayController = () => {
     const backgroundColorHex = config.inputStyle?.backgroundColorHex ?? "#ffff";
     const textColorHex = config.inputStyle?.textColorHex ?? "#ffff";
     const playIntervalRef = useRef(null);
+    const [forceStop, setForceStop] = useState(false);
     const handlePlay = () => {
         if (disabledController)
             return;
@@ -30,9 +31,13 @@ const AutoPlayController = () => {
             });
             return;
         }
+        setForceStop(false);
         let currentPlayedRounds = playedRounds;
         let remainingPlays = numberOfPlays; // Track the decreasing value
         const loopRounds = () => {
+            if (forceStop) {
+                return;
+            }
             if (remainingPlays === 0 || currentPlayedRounds < remainingPlays) {
                 if (!isAutoPlaying) {
                     setIsAutoPlaying(true);
@@ -57,11 +62,16 @@ const AutoPlayController = () => {
             clearTimeout(playIntervalRef.current);
             playIntervalRef.current = null;
         }
-        setIsAutoPlaying(false);
-        setPlayedRounds(0);
+        setForceStop(true);
+        // Reset forceStop after a delay (e.g., 3 seconds)
+        setTimeout(() => {
+            setPlayedRounds(0);
+            setForceStop(false);
+            setIsAutoPlaying(false);
+        }, 1000);
     };
-    const canStopAutoplay = isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays);
-    return (_jsxs(_Fragment, { children: [_jsx(GroupRow, { className: styles_group.group, children: _jsx(Input, { className: styles_group.groupItem, value: numberOfPlays, type: "number", onChange: (e) => setNumberOfPlays(Number(e.currentTarget.value)), placeholder: "Number of Plays", min: 0, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex }) }), _jsxs(GroupRow, { className: styles_group.group, children: [_jsx(InputWithIcon, { className: styles_group.groupItem, value: playAmount, type: "number", onChange: (e) => setPlayAmount(Number(e.currentTarget.value)), placeholder: minPlayAmount.toString(), max: maxPlayAmount, min: minPlayAmount, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: _jsx(SelectMenu, { currencies: currencies, selectedCurrency: currentCurrency, setSelectedCurrency: sendSetUserCurrencyEvent, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex }) }), _jsx(Button, { className: styles_group.groupItem, onClick: () => setPlayAmount(Math.max(playAmount * PLAY_HALVE, minPlayAmount)), theme: "ghost", disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "-" }), _jsx(Button, { className: styles_group.groupItem, onClick: () => setPlayAmount(Math.min(playAmount * PLAY_DOUBLE, maxPlayAmount)), theme: "ghost", disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "+" })] }), canStopAutoplay ? (_jsx(Button, { disabled: !isAutoPlaying, className: styles_form.buttonCashout, onClick: stopAutoplay, theme: "primary", backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "Stop Playing" })) : (_jsx(Button, { disabled: disabledController || isAutoPlaying, className: styles_form.buttonSweeps, onClick: handlePlay, theme: "primary", backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "Autoplay Now" }))] }));
+    const canStopAutoplay = isAutoPlaying && (numberOfPlays === 0 || playedRounds < numberOfPlays) || forceStop;
+    return (_jsxs(_Fragment, { children: [_jsx(GroupRow, { className: styles_group.group, children: _jsx(Input, { className: styles_group.groupItem, value: numberOfPlays, type: "number", onChange: (e) => setNumberOfPlays(Number(e.currentTarget.value)), placeholder: "Number of Plays", min: 0, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex }) }), _jsxs(GroupRow, { className: styles_group.group, children: [_jsx(InputWithIcon, { className: styles_group.groupItem, value: playAmount, type: "number", onChange: (e) => setPlayAmount(Number(e.currentTarget.value)), placeholder: minPlayAmount.toString(), max: maxPlayAmount, min: minPlayAmount, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: _jsx(SelectMenu, { currencies: currencies, selectedCurrency: currentCurrency, setSelectedCurrency: sendSetUserCurrencyEvent, disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex }) }), _jsx(Button, { className: styles_group.groupItem, onClick: () => setPlayAmount(Math.max(playAmount * PLAY_HALVE, minPlayAmount)), theme: "ghost", disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "-" }), _jsx(Button, { className: styles_group.groupItem, onClick: () => setPlayAmount(Math.min(playAmount * PLAY_DOUBLE, maxPlayAmount)), theme: "ghost", disabled: disabledController || isAutoPlaying, backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "+" })] }), canStopAutoplay ? (_jsx(Button, { disabled: !isAutoPlaying, className: styles_form.buttonCashout, onClick: stopAutoplay, theme: "primary", backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "Stop Playing" })) : (_jsx(Button, { disabled: disabledController || isAutoPlaying || forceStop, className: styles_form.buttonSweeps, onClick: handlePlay, theme: "primary", backgroundColorHex: backgroundColorHex, textColorHex: textColorHex, children: "Autoplay Now" }))] }));
 };
 export default AutoPlayController;
 //# sourceMappingURL=AutoPlayController.js.map
