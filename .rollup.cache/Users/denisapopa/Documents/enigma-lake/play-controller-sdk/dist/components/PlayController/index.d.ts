@@ -1,1 +1,1 @@
-export { default } from './PlayController';
+export { default } from './PlayControllerWrapper';

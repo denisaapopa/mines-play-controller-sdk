@@ -1,2 +1,2 @@
-export { default } from './PlayController';
+export { default } from './PlayControllerWrapper';
 //# sourceMappingURL=index.js.map
