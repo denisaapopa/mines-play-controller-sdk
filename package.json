@@ -1,6 +1,6 @@
 {
   "name": "@enigma-lake/play-controller-sdk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A React component library for building gameplay interfaces",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -20,7 +20,9 @@
   "license": "ISC",
   "files": [
     "dist",
-    "dist/style.css"
+    "dist/style.css",
+    "dist/index.js",
+    "dist/index.d.ts"
   ],
   "peerDependencies": {
     "@enigma-lake/zoot-platform-sdk": "1.0.7",
