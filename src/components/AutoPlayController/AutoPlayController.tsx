@@ -10,11 +10,11 @@ import SelectMenu from "../base/SelectMenu";
 import Button from "../base/Button";
 
 import { useGameState } from "../GameState/GameStateContext";
-import { PLAY_DOUBLE, PLAY_HALVE } from "../types/playController";
+import { PLAY_DOUBLE, PLAY_HALVE } from "../../types/playController";
 
 import styles_group from "../base/GroupRow/GroupRow.module.scss";
 import styles_form from "./AutoPlayController.module.scss";
-import { AUTO_PLAY_STATE } from "../types/gameMode";
+import { AUTO_PLAY_STATE } from "../../types/gameMode";
 
 const AUTO_STOP_DELAY = 1000;
 

@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { createContext } from "react";
 
-import { GAME_MODE, AUTO_PLAY_STATE } from "../types/gameMode";
-import { PlayControllerProps } from "../types/playController";
+import { GAME_MODE, AUTO_PLAY_STATE } from "../../types/gameMode";
+import { PlayControllerProps } from "../../types/playController";
 
 export interface GameStateContextType {
   mode: GAME_MODE;

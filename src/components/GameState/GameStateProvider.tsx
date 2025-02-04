@@ -1,7 +1,7 @@
 import { ReactElement, useCallback, useState, useMemo } from "react";
 import { GameStateContext, GameStateContextType } from "./GameStateContext";
-import { AUTO_PLAY_STATE, GAME_MODE } from "../types/gameMode";
-import { PlayControllerProps } from "../types/playController";
+import { AUTO_PLAY_STATE, GAME_MODE } from "../../types/gameMode";
+import { PlayControllerProps } from "../../types/playController";
 
 import styles_ui from "./UI.module.scss";
 import ManualPlayController from "../ManualPlayController";
