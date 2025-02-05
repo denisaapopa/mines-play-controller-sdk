@@ -56,10 +56,14 @@ const GameStateProvider: React.FC<{
     setNumberOfPlays(0);
   }, []);
 
-  const toggleMode = () =>
+  const toggleMode = useCallback(() => {
+    if (config.playOptions.isPlaying || isAutoPlaying) {
+      return false;
+    }
     setMode((prevMode) =>
       prevMode === GAME_MODE.MANUAL ? GAME_MODE.AUTOPLAY : GAME_MODE.MANUAL,
     );
+  }, [config.playOptions.isPlaying, isAutoPlaying]);
 
   const changeSelection = useCallback(
     (values: number[]) => {
@@ -106,6 +110,7 @@ const GameStateProvider: React.FC<{
       playManualMode,
       changeAutoplayState,
       resetState,
+      toggleMode,
     ],
   );
 
@@ -118,7 +123,11 @@ const GameStateProvider: React.FC<{
           className={cx(styles_ui.base, styles_ui.betForm)}
           style={{ "--bet-bottom": "50px" } as React.CSSProperties}
         >
-          <Switch enabled={mode !== GAME_MODE.MANUAL} setEnabled={toggleMode} />
+          <Switch
+            enabled={mode !== GAME_MODE.MANUAL}
+            setEnabled={toggleMode}
+            isPlaying={isAutoPlaying || config.playOptions.isPlaying}
+          />
           {mode === GAME_MODE.MANUAL ? (
             <ManualPlayController />
           ) : (
