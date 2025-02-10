@@ -135,7 +135,7 @@ const GameExample = () => {
     },
     panel: {
       bottom: '15px',
-      panelBackgroundColorHex: "#081E64"
+      bgColorHex: "#081E64"
     }
   };
 
