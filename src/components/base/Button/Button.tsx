@@ -15,7 +15,7 @@ type Props = React.ComponentProps<"button"> & {
 
 const Button = ({
   disabled,
-  className,
+  className = "",
   theme = "primary",
   ...props
 }: Props) => {

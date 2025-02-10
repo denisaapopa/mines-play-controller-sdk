@@ -1,24 +1,26 @@
 import { AUTO_PLAY_STATE } from "../../types";
-import { useInteractivePlayState } from "../InteractivePlayState/InteractivePlayStateContext";
+import { useAutoManualPlayState } from "../AutoManualPlayStateProvider/AutoManualPlayStateContext";
 import { ChangeEvent, FocusEvent, useRef } from "react";
 
 export const usePlayController = () => {
   const {
     config,
-    setNumberOfPlays,
-    numberOfPlays,
-    setPlayedRounds,
-    playedRounds,
-    selection,
-    setAutoplayState,
-    autoplayState,
-  } = useInteractivePlayState();
+    autoPlay: {
+      setNumberOfPlays,
+      numberOfPlays,
+      setPlayedRounds,
+      playedRounds,
+      selection,
+      setState,
+      state,
+    },
+  } = useAutoManualPlayState();
   const { currentCurrency, currencies, winText } = config.currencyOptions;
   const {
     isPlaying,
     canCashout,
     disabledController,
-    showToast,
+    showAutoPlayToast,
     autoPlayDelay = 1500,
     playHook,
   } = config.playOptions;
@@ -35,7 +37,7 @@ export const usePlayController = () => {
       clearTimeout(playIntervalRef.current);
       playIntervalRef.current = null;
     }
-    setAutoplayState(AUTO_PLAY_STATE.SELECTING);
+    setState(AUTO_PLAY_STATE.SELECTING);
     setTimeout(() => {
       setPlayedRounds(0);
     }, 1500);
@@ -73,7 +75,7 @@ export const usePlayController = () => {
     }
 
     if (selection.length === 0) {
-      showToast?.({
+      showAutoPlayToast?.({
         type: "info",
         message: "Please select at least one tile to start autoplay.",
       });
@@ -81,14 +83,14 @@ export const usePlayController = () => {
     }
 
     isAutoplayActiveRef.current = true;
-    setAutoplayState(AUTO_PLAY_STATE.PLAYING);
+    setState(AUTO_PLAY_STATE.PLAYING);
 
     loopRounds(playedRounds, numberOfPlays);
   };
 
   const isDisabled = () => disabledController || isPlaying;
   const isAutoplayDisabled = () =>
-    disabledController || autoplayState === AUTO_PLAY_STATE.PLAYING;
+    disabledController || state === AUTO_PLAY_STATE.PLAYING;
 
   const adjustPlayAmount = (multiplier: number) => {
     if (isDisabled()) {
@@ -138,7 +140,7 @@ export const usePlayController = () => {
     },
     autoPlay: {
       isDisabled: isAutoplayDisabled,
-      state: autoplayState,
+      state,
       onPlay: handleAutoPlay,
       onStopPlay: stopAutoplay,
     },

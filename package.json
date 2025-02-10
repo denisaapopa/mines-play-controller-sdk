@@ -1,6 +1,6 @@
 {
   "name": "@enigma-lake/play-controller-sdk",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A React component library for building gameplay interfaces",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

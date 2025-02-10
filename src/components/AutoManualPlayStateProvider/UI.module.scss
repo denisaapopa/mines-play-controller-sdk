@@ -19,25 +19,13 @@
   left: 50%;
   transform: translateX(-50%);
   bottom: var(--bet-bottom);
-  background-color: rgba(var(--bet-panel-background), 0.75);
+  background-color: rgba(var(--bet-panel-bg), 0.75);
 
   width: 250px;
   height: 140px;
   padding: 9px 10px;
   display: flex;
   flex-direction: column;
-}
-
-.buttonCashout {
-  background: linear-gradient(357deg, #7f44c3 22.01%, #9f5eeb 97.97%);
-}
-
-.buttonSweeps {
-  background: linear-gradient(357deg, #10be68 23.9%, #29cf7d 97.97%);
-}
-
-.buttonGold {
-  background: linear-gradient(357deg, #bf9e21 22.01%, #f0c72c 97.97%);
 }
 
 .disabled {

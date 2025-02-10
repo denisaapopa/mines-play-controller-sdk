@@ -1,14 +1,13 @@
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
 
-import Button from "../base/Button";
-import { usePlayController } from "../hooks/usePlayController";
-import { useInteractivePlayState } from "../InteractivePlayState/InteractivePlayStateContext";
-import PlayAmountControl from "../base/PlayController/PlayController";
+import { usePlayController } from "../../hooks/usePlayController";
+import { AUTO_PLAY_STATE } from "../../../types";
+import PlayAmountControl from "../PlayController/PlayController";
+import Button from "../Button";
 
-import styles_ui from "../InteractivePlayState/UI.module.scss";
+import styles_button from "../Button/Button.module.scss";
 
-const ManualPlayController = () => {
-  const { config } = useInteractivePlayState();
+const AutoPlayController = () => {
   const {
     currentCurrency,
     currencies,
@@ -19,7 +18,7 @@ const ManualPlayController = () => {
     adjustPlayAmount,
     onChangeAmount,
     onBlurAmount,
-    manualPlay: { isDisabled, onPlay, canCashout },
+    autoPlay: { isDisabled, state, onPlay, onStopPlay },
   } = usePlayController();
 
   return (
@@ -36,32 +35,29 @@ const ManualPlayController = () => {
         currencies={currencies}
       />
 
-      {canCashout ? (
+      {state === AUTO_PLAY_STATE.PLAYING ? (
         <Button
-          disabled={
-            config.playOptions.disabledController ||
-            !config.playOptions.isPlaying
-          }
-          className={styles_ui.buttonCashout}
-          onClick={config.onCashout}
+          disabled={state !== AUTO_PLAY_STATE.PLAYING}
+          className={styles_button.buttonCashout}
+          onClick={onStopPlay}
         >
-          Cashout {config.currencyOptions.winText}
+          Stop Autoplay
         </Button>
       ) : (
         <Button
           disabled={isDisabled() || !isValidPlayAmount}
           className={
             currentCurrency === Currency.GOLD
-              ? styles_ui.buttonGold
-              : styles_ui.buttonSweeps
+              ? styles_button.buttonGold
+              : styles_button.buttonSweeps
           }
           onClick={onPlay}
         >
-          Play now
+          Start Autoplay
         </Button>
       )}
     </>
   );
 };
 
-export default ManualPlayController;
+export default AutoPlayController;

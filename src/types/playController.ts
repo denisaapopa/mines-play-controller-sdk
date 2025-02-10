@@ -1,13 +1,9 @@
 import { Currency, PlayLimits } from "@enigma-lake/zoot-platform-sdk";
 
 export type StylingProps = {
-  inputStyle?: {
-    backgroundColorHex?: string;
-    textColorHex?: string;
-  };
   panel: {
     bottom: string;
-    panelBackgroundColorHex: string;
+    bgColorHex: string;
   };
 };
 
@@ -28,7 +24,7 @@ export type PlaySettingsProps = {
   canCashout: boolean;
   disabledController: boolean;
   displayController: boolean;
-  showToast: (props: {
+  showAutoPlayToast: (props: {
     type: "success" | "error" | "warning" | "info";
     message: string;
   }) => void;

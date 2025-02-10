@@ -1,66 +1,69 @@
 import { ReactElement, useCallback, useState, useMemo } from "react";
 import cx from "classnames";
 
-import ManualPlayController from "../ManualPlayController";
-import AutoPlayController from "../AutoPlayController";
 import { AUTO_PLAY_STATE, GAME_MODE } from "../../types/gameMode";
 import { PlayControllerProps } from "../../types/playController";
 import { InputWithIcon } from "../base";
 
-import styles_ui from "./UI.module.scss";
-import { hexToRgb } from "../utils";
-import {
-  InteractivePlayStateContext,
-  InteractivePlayStateContextType,
-} from "./InteractivePlayStateContext";
+import AutoPlayController from "../base/AutoPlayController";
+import ManualPlayController from "../base/ManualPlayController";
 
-const InteractivePlayStateProvider: React.FC<{
+import styles_ui from "./UI.module.scss";
+import {
+  AutoManualPlayStateContext,
+  AutoManualPlayStateContextType,
+} from "./AutoManualPlayStateContext";
+import { hexToRgb } from "../utils";
+
+interface AutoManualPlayStateProviderProps {
   children:
     | React.ReactNode
-    | ((state: InteractivePlayStateContextType) => ReactElement);
+    | ((state: AutoManualPlayStateContextType) => ReactElement);
   config: PlayControllerProps;
-}> = ({ children, config }) => {
-  // Game mode & autoplay state
+}
+
+const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
+  children,
+  config,
+}) => {
   const [mode, setMode] = useState<GAME_MODE>(GAME_MODE.MANUAL);
   const [autoplayState, setAutoplayState] = useState<AUTO_PLAY_STATE>(
     AUTO_PLAY_STATE.IDLE,
   );
-
-  // Play & selection state
-  const [playedRounds, setPlayedRounds] = useState(0);
-  const [selection, setSelection] = useState<number[]>([]);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [playedRounds, setPlayedRounds] = useState(0);
   const [numberOfPlays, setNumberOfPlays] = useState(Infinity);
+  const [selection, setSelection] = useState<number[]>([]);
 
-  // Handlers
   const startAutoplay = useCallback((numPlays: number) => {
     setMode(GAME_MODE.AUTOPLAY);
     setAutoplayState(AUTO_PLAY_STATE.SELECTING);
     setNumberOfPlays(numPlays);
-    setPlayedRounds(0); // Reset rounds when starting autoplay
+    setPlayedRounds(0); // Reset when starting autoplay
   }, []);
 
   const stopAutoplay = useCallback(() => {
     setMode(GAME_MODE.MANUAL);
     setAutoplayState(AUTO_PLAY_STATE.IDLE);
+    setIsAutoPlaying(false);
   }, []);
+
+  const updateAutoplayState = useCallback(
+    (newState: AUTO_PLAY_STATE) => setAutoplayState(newState),
+    [],
+  );
 
   const playManualMode = useCallback(() => {
     setMode(GAME_MODE.MANUAL);
     setAutoplayState(AUTO_PLAY_STATE.IDLE);
   }, []);
 
-  const changeAutoplayState = useCallback(
-    (newState: AUTO_PLAY_STATE.SELECTING | AUTO_PLAY_STATE.PLAYING) =>
-      setAutoplayState(newState),
-    [],
-  );
-
   const resetState = useCallback(() => {
     setMode(GAME_MODE.MANUAL);
     setAutoplayState(AUTO_PLAY_STATE.IDLE);
     setPlayedRounds(0);
     setNumberOfPlays(0);
+    setSelection([]);
   }, []);
 
   const toggleMode = useCallback(() => {
@@ -69,19 +72,15 @@ const InteractivePlayStateProvider: React.FC<{
       config.playOptions.disabledController ||
       autoplayState === AUTO_PLAY_STATE.PLAYING
     ) {
-      return false;
+      return;
     }
     setNumberOfPlays(Infinity);
     setMode((prevMode) =>
       prevMode === GAME_MODE.MANUAL ? GAME_MODE.AUTOPLAY : GAME_MODE.MANUAL,
     );
-  }, [
-    autoplayState,
-    config.playOptions.disabledController,
-    config.playOptions.isPlaying,
-  ]);
+  }, [autoplayState, config.playOptions]);
 
-  const changeSelection = useCallback(
+  const updateSelection = useCallback(
     (values: number[]) => {
       if (!isAutoPlaying) {
         setSelection(values);
@@ -93,62 +92,57 @@ const InteractivePlayStateProvider: React.FC<{
   const contextValue = useMemo(
     () => ({
       mode,
-      isAutoPlaying,
-      autoplayState,
-      playedRounds,
-      numberOfPlays,
-      selection,
       config,
-      setIsAutoPlaying,
-      setAutoplayState,
-      setPlayedRounds,
-      setNumberOfPlays,
-      setSelection: changeSelection,
-      startAutoplay,
-      stopAutoplay,
-      playManualMode,
-      changeAutoplayState,
-      resetState,
+      manual: { playManualMode },
+      autoPlay: {
+        state: autoplayState,
+        playedRounds,
+        numberOfPlays,
+        selection,
+        isActive: isAutoPlaying,
+        start: startAutoplay,
+        stop: stopAutoplay,
+        setSelection: updateSelection,
+        updateState: updateAutoplayState,
+        setIsActive: setIsAutoPlaying,
+        setPlayedRounds,
+        setNumberOfPlays,
+        setState: setAutoplayState,
+      },
+      reset: resetState,
       toggleMode,
     }),
     [
       mode,
-      isAutoPlaying,
+      config,
+      playManualMode,
       autoplayState,
       playedRounds,
       numberOfPlays,
       selection,
-      config,
-      changeSelection,
+      isAutoPlaying,
       startAutoplay,
       stopAutoplay,
-      playManualMode,
-      changeAutoplayState,
+      updateSelection,
+      updateAutoplayState,
       resetState,
       toggleMode,
     ],
   );
 
-  const { backgroundColorHex = "#ffff", textColorHex = "#ffff" } =
-    config.inputStyle ?? {};
-  const { panelBackgroundColorHex = "#081E64", bottom = "15px" } =
-    config.panel ?? {};
-
   return (
-    <InteractivePlayStateContext.Provider value={contextValue}>
+    <AutoManualPlayStateContext.Provider value={contextValue}>
       {typeof children === "function" ? children(contextValue) : children}
 
       {config.playOptions.displayController && (
         <div
           className={cx(styles_ui.base, styles_ui.betForm)}
-          // style={
-          //   {
-          //     "--bet-bottom": bottom,
-          //     "--bet-panel-background": hexToRgb(panelBackgroundColorHex),
-          //     "--bg-color-rgb": hexToRgb(backgroundColorHex),
-          //     "--text-color-hex": hexToRgb(textColorHex),
-          //   } as React.CSSProperties
-          // }
+          style={
+            {
+              "--bet-bottom": config.panel.bottom,
+              "--bet-panel-bg": hexToRgb(config.panel.bgColorHex ?? "#ffff"),
+            } as React.CSSProperties
+          }
         >
           <InputWithIcon
             value={numberOfPlays === Infinity ? 0 : numberOfPlays}
@@ -189,8 +183,8 @@ const InteractivePlayStateProvider: React.FC<{
           )}
         </div>
       )}
-    </InteractivePlayStateContext.Provider>
+    </AutoManualPlayStateContext.Provider>
   );
 };
 
-export default InteractivePlayStateProvider;
+export default AutoManualPlayProvider;

@@ -42,8 +42,20 @@
 
   &__state {
     &-disabled {
-      color: rgba(var(--text-color-hex), 0.1) !important;
+      color: rgba(var(--text-color-hex), 0.5) !important;
       pointer-events: none;
     }
   }
+}
+
+.buttonCashout {
+  background: linear-gradient(357deg, #7f44c3 22.01%, #9f5eeb 97.97%);
+}
+
+.buttonSweeps {
+  background: linear-gradient(357deg, #10be68 23.9%, #29cf7d 97.97%);
+}
+
+.buttonGold {
+  background: linear-gradient(357deg, #bf9e21 22.01%, #f0c72c 97.97%);
 }

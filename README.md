@@ -1,6 +1,7 @@
+
 # PlayController
 
-The `PlayController` component is part of a gameplay interface, enabling users to initiate a play or cash out based on their current game state. It supports dynamic currency handling, play amount adjustment, and play limits, offering buttons to increase/decrease the play amount and handle user actions like initiating the play or cashing out.
+The `PlayController` component is a key part of the gameplay interface, allowing users to initiate a play or cash out based on their current game state. It supports manual play, autoplay for a specified number of plays, dynamic currency handling, and play amount adjustments.
 
 ---
 
@@ -10,14 +11,13 @@ The `PlayController` allows the user to:
 
 - Select a currency.
 - Adjust the play amount.
-- Start a play.
+- Start a play (manual or auto).
 - Cash out winnings.
+- Toggle between manual play and autoplay.
 
 ---
 
 ## Setup
-
-To use the PlayController component in your project, follow these steps:
 
 ### 1. Install the package using npm:
 
@@ -28,23 +28,37 @@ npm install @enigma-lake/play-controller-sdk
 ### 2. Import the component and styles in your project:
 
 ```tsx
-import PlayController from "@enigma-lake/play-controller-sdk";
+import {
+  AUTO_PLAY_STATE,
+  GAME_MODE,
+  AutoManualPlayProvider,
+} from "@enigma-lake/play-controller-sdk";
+
 import "@enigma-lake/play-controller-sdk/dist/style.css";
 ```
 
 ---
 
-## Props
+## Context & Provider
 
-The component accepts the following props:
+### `AutoManualPlayProvider`
+
+The `AutoManualPlayProvider` wraps the PlayController, managing both manual play and autoplay. It uses React Context to provide game state and actions throughout the component tree.
+
+🔹 **Features of `AutoManualPlayProvider`**:
+- **Manages Game Mode**: Switches between MANUAL and AUTOPLAY.
+- **Handles Autoplay**: Sets the number of plays, tracks rounds, and stops automatically.
+- **Provides Context:** Exposes state and functions for controlling play behavior.
+
+## Props
 
 ### 1. `StylingProps`
 
 Handles the styling-related properties for the component.
 
-- **`inputStyle` (optional)**: Custom styling for the input fields.
-  - **`backgroundColorHex`**: Hex color for the input background.
-  - **`textColorHex`**: Hex color for the input text.
+- **`panel` (optional)**: Custom styling for the play controller.
+  - **`bgColorHex`**: Hex color for the panel background.
+  - **`bottom`**: Bottom margin for the panel relative to the window.
 
 ### 2. `CurrencyProps`
 
@@ -53,13 +67,14 @@ Handles currency-related logic and settings.
 - **`currencyOptions`**: An object containing the following properties:
   - **`currentCurrency`**: The currently selected currency (e.g., `Currency.SWEEPS`).
   - **`currencies`**: Array of available currencies that the user can choose from.
-  - **`formatCurrency`**: A function to format the currency value (e.g., `formatCurrency(value, Currency.GOLD)`).
+  - **`winText`**: The win amount during the playing.
 
 ### 3. `ActionsProps`
 
 Defines functions for the user actions.
 
 - **`onPlay`**: A callback function to trigger when the user starts a play.
+- **`onAutoPlay`**: A callback function to trigger when the user starts autoplay. It accepts `selection` (an array of selected indices) and `callback` (a function to be executed once autoplay finishes).
 - **`onCashout`**: A callback function to trigger when the user decides to cash out their winnings.
 
 ### 4. `PlaySettingsProps`
@@ -67,71 +82,69 @@ Defines functions for the user actions.
 Handles game-specific settings and states.
 
 - **`playOptions`**: An object containing the following properties:
-  - **`winAmount` (optional)**: The user's current win amount. Defaults to `0`.
   - **`isPlaying`**: Boolean flag indicating whether the game is currently in progress.
   - **`canCashout`**: Boolean flag indicating whether the user can cash out their current play.
   - **`disabledController`**: Boolean flag to disable all interactive elements in the component, preventing user interactions (e.g., when the game is in progress).
+  - **`displayController`**: Boolean flag to determine if the play controller should be visible.
+  - **`showAutoPlayToast`**: A function to show a toast message during autoplay. Accepts an object with:
+    - **`type`**: Message type (`"success"`, `"error"`, `"warning"`, or `"info"`).
+    - **`message`**: The message to display.
   - **`playHook`**: A hook providing the current play amount, play limits, and a function to set the play amount.
+    - **`playLimits`**: Play limits for the game.
+    - **`playAmount`**: The current play amount.
+    - **`setPlayAmount`**: A function to set the play amount.
+  - **`autoPlayDelay`** (optional): The delay (in milliseconds) before auto play starts.
 
 ---
 
 ## Example Usage
 
 ```tsx
-import { Currency } from "@enigma-lake/zoot-platform-sdk";
-import PlayController from "@enigma-lake/play-controller-sdk";
 import "@enigma-lake/play-controller-sdk/dist/style.css";
+import { AutoManualPlayProvider, GAME_MODE, AUTO_PLAY_STATE } from "@enigma-lake/play-controller-sdk";
+import { Currency } from "@enigma-lake/zoot-platform-sdk";
 
-const Example = () => {
-  const [currency, setCurrency] = useState(Currency.SWEEPS);
-  const [playAmount, setPlayAmount] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [canCashout, setCanCashout] = useState(false);
-
-  const formatCurrency = (value: number, currency: Currency) => {
-    return `${value} ${currency === Currency.SWEEPS ? "SC" : "GC"}`;
-  };
-
-  const playHook = () => ({
-    playAmount,
-    playLimits: {
-      [Currency.SWEEPS]: { limits: { min: 0.5, max: 100 } },
-      [Currency.GOLD]: { limits: { min: 1, max: 50 } },
+const GameExample = () => {
+  const config = {
+    currencyOptions: {
+      currentCurrency: Currency.SWEEPS,
+      currencies: [Currency.SWEEPS, Currency.GOLD],
+      winText: "0.00 SC",
     },
-    setPlayAmount,
-  });
-
-  const onPlay = () => {
-    console.log("Play Started!");
-    setIsPlaying(true);
-  };
-
-  const onCashout = () => {
-    console.log("Cashout!");
-    setCanCashout(false);
+    onPlay: () => console.log("Play button clicked"),
+    onAutoPlay: (selection, callback) => {
+      console.log("Auto Play started with selection:", selection);
+      callback();
+    },
+    onCashout: () => console.log("Cashout clicked"),
+    playOptions: {
+      displayController: true,
+      canCashout: false,
+      isPlaying: false,
+      disabledController: false,
+      showAutoPlayToast: (props) => {
+        console.log(`${props.type}: ${props.message}`);
+      },
+      playHook: () => {
+        return {
+          playLimits: { min: 1, max: 100 },
+          playAmount: 10,
+          setPlayAmount: (value) => console.log("New play amount:", value),
+        };
+      },
+    },
+    panel: {
+      bottom: '15px',
+      panelBackgroundColorHex: "#081E64"
+    }
   };
 
   return (
-    <PlayController
-      currencyOptions={{
-        currentCurrency: currency,
-        currencies: [Currency.SWEEPS, Currency.GOLD],
-        formatCurrency,
-      }}
-      playOptions={{
-        winAmount: 0,
-        isPlaying,
-        canCashout,
-        disabledController: isPlaying,
-        playHook,
-      }}
-      onPlay={onPlay}
-      onCashout={onCashout}
-      inputStyle={{
-        backgroundColorHex: "#f0f0f0",
-        textColorHex: "#333333",
-      }}
-    />
+    <AutoManualPlayProvider config={config}>
+      {({ autoPlay: { selection, setSelection, state }, mode }) => (
+        // children content
+      )}
+    </AutoManualPlayProvider>
   );
 };
 ```
@@ -141,17 +154,14 @@ const Example = () => {
 ## Key Features
 
 1. **Dynamic Currency Handling**:
-
    - Supports multiple currencies (e.g., SWEEPS, GOLD).
    - Allows users to switch currencies easily.
 
 2. **Play Amount Adjustment**:
-
    - Includes buttons to halve or double the play amount.
    - Validates play amounts against user balance and play limits.
 
 3. **Custom Styling**:
-
    - Supports customizable input and button colors.
 
 4. **Play & Cashout Actions**:
@@ -162,7 +172,6 @@ const Example = () => {
 ## Development Notes
 
 1. **Play Amount Validation**:
-
    - The play amount is validated to ensure it falls within the minimum and maximum limits, as well as the user's available balance.
 
 2. **Responsive Design**:
