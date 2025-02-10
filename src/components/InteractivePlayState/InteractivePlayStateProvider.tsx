@@ -1,16 +1,23 @@
 import { ReactElement, useCallback, useState, useMemo } from "react";
-import { GameStateContext, GameStateContextType } from "./GameStateContext";
-import { AUTO_PLAY_STATE, GAME_MODE } from "../../types/gameMode";
-import { PlayControllerProps } from "../../types/playController";
+import cx from "classnames";
 
-import styles_ui from "./UI.module.scss";
 import ManualPlayController from "../ManualPlayController";
 import AutoPlayController from "../AutoPlayController";
-import cx from "classnames";
-import { Switch } from "../base/Switch/Switch";
+import { AUTO_PLAY_STATE, GAME_MODE } from "../../types/gameMode";
+import { PlayControllerProps } from "../../types/playController";
+import { InputWithIcon } from "../base";
 
-const GameStateProvider: React.FC<{
-  children: React.ReactNode | ((state: GameStateContextType) => ReactElement);
+import styles_ui from "./UI.module.scss";
+import { hexToRgb } from "../utils";
+import {
+  InteractivePlayStateContext,
+  InteractivePlayStateContextType,
+} from "./InteractivePlayStateContext";
+
+const InteractivePlayStateProvider: React.FC<{
+  children:
+    | React.ReactNode
+    | ((state: InteractivePlayStateContextType) => ReactElement);
   config: PlayControllerProps;
 }> = ({ children, config }) => {
   // Game mode & autoplay state
@@ -57,13 +64,22 @@ const GameStateProvider: React.FC<{
   }, []);
 
   const toggleMode = useCallback(() => {
-    if (config.playOptions.isPlaying || isAutoPlaying) {
+    if (
+      config.playOptions.isPlaying ||
+      config.playOptions.disabledController ||
+      autoplayState === AUTO_PLAY_STATE.PLAYING
+    ) {
       return false;
     }
+    setNumberOfPlays(Infinity);
     setMode((prevMode) =>
       prevMode === GAME_MODE.MANUAL ? GAME_MODE.AUTOPLAY : GAME_MODE.MANUAL,
     );
-  }, [config.playOptions.isPlaying, isAutoPlaying]);
+  }, [
+    autoplayState,
+    config.playOptions.disabledController,
+    config.playOptions.isPlaying,
+  ]);
 
   const changeSelection = useCallback(
     (values: number[]) => {
@@ -74,7 +90,6 @@ const GameStateProvider: React.FC<{
     [isAutoPlaying],
   );
 
-  // Memoized context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
       mode,
@@ -114,20 +129,59 @@ const GameStateProvider: React.FC<{
     ],
   );
 
+  const { backgroundColorHex = "#ffff", textColorHex = "#ffff" } =
+    config.inputStyle ?? {};
+  const { panelBackgroundColorHex = "#081E64", bottom = "15px" } =
+    config.panel ?? {};
+
   return (
-    <GameStateContext.Provider value={contextValue}>
+    <InteractivePlayStateContext.Provider value={contextValue}>
       {typeof children === "function" ? children(contextValue) : children}
 
       {config.playOptions.displayController && (
         <div
           className={cx(styles_ui.base, styles_ui.betForm)}
-          style={{ "--bet-bottom": "50px" } as React.CSSProperties}
+          // style={
+          //   {
+          //     "--bet-bottom": bottom,
+          //     "--bet-panel-background": hexToRgb(panelBackgroundColorHex),
+          //     "--bg-color-rgb": hexToRgb(backgroundColorHex),
+          //     "--text-color-hex": hexToRgb(textColorHex),
+          //   } as React.CSSProperties
+          // }
         >
-          <Switch
-            enabled={mode !== GAME_MODE.MANUAL}
-            setEnabled={toggleMode}
-            isPlaying={isAutoPlaying || config.playOptions.isPlaying}
-          />
+          <InputWithIcon
+            value={numberOfPlays === Infinity ? 0 : numberOfPlays}
+            type="number"
+            onChange={(e) => setNumberOfPlays(Number(e.currentTarget.value))}
+            placeholder="Number of Plays"
+            min={0}
+            disabled={
+              config.playOptions.disabledController ||
+              autoplayState === AUTO_PLAY_STATE.PLAYING ||
+              mode === GAME_MODE.MANUAL
+            }
+            currency={config.currencyOptions.currentCurrency}
+            switcherConfig={{
+              onSwitch: toggleMode,
+              isPlaying: isAutoPlaying || config.playOptions.isPlaying,
+              enabled: mode !== GAME_MODE.MANUAL,
+              currency: config.currencyOptions.currentCurrency,
+              disabled:
+                config.playOptions.disabledController ||
+                autoplayState === AUTO_PLAY_STATE.PLAYING,
+            }}
+          >
+            <span
+              className={cx({
+                [styles_ui.disabled]:
+                  mode !== GAME_MODE.AUTOPLAY ||
+                  numberOfPlays !== Infinity ||
+                  autoplayState === AUTO_PLAY_STATE.PLAYING,
+              })}
+            >{`∞`}</span>
+          </InputWithIcon>
+
           {mode === GAME_MODE.MANUAL ? (
             <ManualPlayController />
           ) : (
@@ -135,8 +189,8 @@ const GameStateProvider: React.FC<{
           )}
         </div>
       )}
-    </GameStateContext.Provider>
+    </InteractivePlayStateContext.Provider>
   );
 };
 
-export default GameStateProvider;
+export default InteractivePlayStateProvider;

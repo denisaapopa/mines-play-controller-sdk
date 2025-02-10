@@ -3,20 +3,21 @@ import {
   sendSetUserCurrencyEvent,
 } from "@enigma-lake/zoot-platform-sdk";
 import { ChangeEvent, FocusEvent } from "react";
+import cx from "classnames";
 
 import GroupRow from "../base/GroupRow/GroupRow";
 import InputWithIcon from "../base/InputWithIcon/InputWithIcon";
 import SelectMenu from "../base/SelectMenu";
 import Button from "../base/Button";
 
-import { useGameState } from "../GameState/GameStateContext";
+import { useInteractivePlayState } from "../InteractivePlayState/InteractivePlayStateContext";
 import { PLAY_DOUBLE, PLAY_HALVE } from "../../types/playController";
 
 import styles_group from "../base/GroupRow/GroupRow.module.scss";
-import styles_form from "./ManualPlayController.module.scss";
+import styles_ui from "../InteractivePlayState/UI.module.scss";
 
 const ManualPlayController = () => {
-  const { config } = useGameState();
+  const { config } = useInteractivePlayState();
   const { currentCurrency, currencies, winText } = config.currencyOptions;
   const { isPlaying, canCashout, disabledController, playHook } =
     config.playOptions;
@@ -24,9 +25,6 @@ const ManualPlayController = () => {
   const { playAmount, playLimits, setPlayAmount } = playHook?.();
   const minPlayAmount = playLimits?.[currentCurrency].limits.min ?? 0;
   const maxPlayAmount = playLimits?.[currentCurrency].limits.max ?? 0;
-
-  const backgroundColorHex = config.inputStyle?.backgroundColorHex ?? "#ffff";
-  const textColorHex = config.inputStyle?.textColorHex ?? "#ffff";
 
   const isDisabled = () => disabledController || isPlaying;
 
@@ -61,28 +59,25 @@ const ManualPlayController = () => {
 
   return (
     <>
-      <GroupRow className={styles_group.group}>
+      <GroupRow>
         <InputWithIcon
           className={styles_group.groupItem}
           value={playAmount}
           type="number"
-          onClear={() => !isDisabled() && setPlayAmount(minPlayAmount)}
           onChange={onChangeAmount}
           onBlur={onBlurAmount}
           placeholder={minPlayAmount.toString()}
           max={maxPlayAmount}
           min={minPlayAmount}
           disabled={isDisabled()}
-          backgroundColorHex={backgroundColorHex}
-          textColorHex={textColorHex}
+          currency={currentCurrency}
+          label="Play Amount"
         >
           <SelectMenu
             currencies={currencies}
             selectedCurrency={currentCurrency}
             setSelectedCurrency={sendSetUserCurrencyEvent}
             disabled={isDisabled()}
-            backgroundColorHex={backgroundColorHex}
-            textColorHex={textColorHex}
           />
         </InputWithIcon>
         <Button
@@ -90,31 +85,24 @@ const ManualPlayController = () => {
           onClick={() => adjustPlayAmount(PLAY_HALVE)}
           theme="ghost"
           disabled={isDisabled()}
-          backgroundColorHex={backgroundColorHex}
-          textColorHex={textColorHex}
         >
-          <span className={styles_form.x2}>-</span>
+          <span className={styles_group.x2}>-</span>
         </Button>
         <Button
           className={styles_group.groupItem}
           onClick={() => adjustPlayAmount(PLAY_DOUBLE)}
           theme="ghost"
           disabled={isDisabled()}
-          backgroundColorHex={backgroundColorHex}
-          textColorHex={textColorHex}
         >
-          <span className={styles_form.x2}>+</span>
+          <span className={cx(styles_group.x2, styles_group.last)}>+</span>
         </Button>
       </GroupRow>
 
       {canCashout ? (
         <Button
           disabled={disabledController || !isPlaying}
-          className={styles_form.buttonCashout}
+          className={styles_ui.buttonCashout}
           onClick={config.onCashout}
-          theme="primary"
-          backgroundColorHex={backgroundColorHex}
-          textColorHex={textColorHex}
         >
           Cashout {winText}
         </Button>
@@ -123,13 +111,10 @@ const ManualPlayController = () => {
           disabled={isDisabled() || !isValidPlayAmount}
           className={
             currentCurrency === Currency.GOLD
-              ? styles_form.buttonGold
-              : styles_form.buttonSweeps
+              ? styles_ui.buttonGold
+              : styles_ui.buttonSweeps
           }
           onClick={config.onPlay}
-          theme="primary"
-          backgroundColorHex={backgroundColorHex}
-          textColorHex={textColorHex}
         >
           Play now
         </Button>

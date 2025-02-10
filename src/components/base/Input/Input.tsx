@@ -1,72 +1,31 @@
 import cx from "classnames";
-import React from "react";
+import React, { useCallback } from "react";
 
-import { cleanInputInteger } from "./cleanInputInteger";
 import { cleanInputNumber } from "./cleanInputNumber";
-import { hexToRgb } from "../../utils";
-
 import styles from "./Input.module.scss";
 
-declare type ValueOf<T> = T[keyof T];
-
-export const types = {
-  text: "text",
-  password: "password",
-  number: "number",
-  htmlNumber: "htmlNumber",
-  email: "email",
-  integer: "integer",
-} as const;
-
-export type Type = ValueOf<typeof types>;
-
-export type Props = React.ComponentProps<"input"> & {
-  backgroundColorHex: string;
-  textColorHex: string;
-};
-
 const Input = ({
-  className,
   onChange,
-  type,
-  backgroundColorHex,
-  textColorHex,
+  disabled,
+  className,
   ...restProps
-}: Props) => {
-  const handleChange = (() => {
-    if (type === "number") {
-      return function handleChangeNumber(
-        event: React.ChangeEvent<HTMLInputElement>,
-      ) {
-        const { value } = event.target;
-        event.target.value = cleanInputNumber(value);
+}: React.ComponentProps<"input">) => {
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!disabled) {
+        event.target.value = cleanInputNumber(event.target.value);
         onChange?.(event);
-      };
-    }
+      }
+    },
+    [disabled, onChange],
+  );
 
-    if (type === "integer") {
-      return function handleChangeInteger(
-        event: React.ChangeEvent<HTMLInputElement>,
-      ) {
-        const { value } = event.target;
-        event.target.value = cleanInputInteger(value);
-        onChange?.(event);
-      };
-    }
-
-    return onChange;
-  })();
   return (
     <input
       {...restProps}
+      disabled={disabled}
       onChange={handleChange}
-      className={cx(styles.base, className)}
-      style={
-        {
-          "--bg-color-rgb": hexToRgb(backgroundColorHex),
-          "--text-color-hex": textColorHex,
-        } as React.CSSProperties
-      }
+      className={cx(styles.base, className, { [styles.disabled]: disabled })}
     />
   );
 };

@@ -1,5 +1,5 @@
 import { Button, Input, InputWithIcon, GroupRow, SelectMenu } from "./base";
-import GameStateProvider from "./GameState";
+import InteractivePlayStateProvider from "./InteractivePlayState";
 
 import { GAME_MODE, AUTO_PLAY_STATE } from "../types/gameMode";
 
@@ -9,7 +9,7 @@ export {
   GroupRow,
   Input,
   SelectMenu,
-  GameStateProvider,
+  InteractivePlayStateProvider,
   GAME_MODE,
   AUTO_PLAY_STATE,
 };

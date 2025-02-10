@@ -1,15 +1,13 @@
-@mixin breakpoint($breakpoint) {
-  @if $breakpoint == "sm" {
-    @media (max-width: 449px) {
-      @content;
-    }
-  } @else if $breakpoint == "md" {
-    @media (max-width: 450px) {
-      @content;
-    }
-  } @else if $breakpoint == "xl" {
-    @media (min-width: 600px) {
-      @content;
-    }
-  }
+*,
+html {
+  --bet-bottom: 15px;
+  --bet-panel-background: 8, 30, 100;
+
+  --bg-color-rgb: 255, 255, 255;
+  --text-color-hex: 255, 255, 255;
+
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
 }

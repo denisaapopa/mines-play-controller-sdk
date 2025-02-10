@@ -1,78 +1,48 @@
+@use "../../common.scss" as *;
+
 .base {
-  padding: 6px 8px;
   background: transparent;
   border: 0;
   margin: 0;
-  border-radius: 8px;
   cursor: pointer;
   outline: none;
+  user-select: none;
 
   &__theme {
     &-ghost {
-      padding: 6px 8px;
-      background: rgba(var(--bg-color-rgb, 110, 98, 98), 0.5);
       border-radius: 10px;
-      padding: 10px;
-      font-style: normal;
-      font-weight: 600;
-      font-size: 15px;
-      line-height: 24px;
-      color: var(--text-color-hex, #ffffff);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
+      height: 35px;
+      display: flex;
+      align-items: center;
+      color: rgba(var(--text-color-hex), 1);
 
       &:hover,
       &:focus,
       &:active {
-        background: rgba(var(--bg-color-rgb, 110, 98, 98), 0.4);
-      }
-
-      &:disabled {
-        background: rgba(var(--bg-color-rgb, 110, 98, 98), 0.2);
+        background: rgba(var(--bg-color-rgb), 0.05);
       }
     }
 
     &-primary {
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 700;
-      background: linear-gradient(180deg, #5b6cff 0%, #3c4de1 100%);
-      box-shadow: inset 0px 1px 4px rgba(255, 255, 255, 0.16);
+      color: rgba(var(--text-color-hex), 1);
+      line-height: 125%;
+      letter-spacing: 0.75px;
       border-radius: 10px;
-      min-height: 48px;
+      height: 39px;
+      width: 231px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      &:hover,
-      &:focus {
-        background: linear-gradient(180deg, #6a78fa 0%, #4556ec 100%);
-      }
-
-      &:active {
-        background: linear-gradient(0deg, #3c4de1 0%, #3c4de1 100%);
-      }
-    }
-
-    &-success {
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 700;
-      background: linear-gradient(180deg, #4acf6f 0%, #2b8444 100%);
-      box-shadow: inset 0px 1px 4px rgba(255, 255, 255, 0.16);
       border-radius: 10px;
-      min-height: 48px;
-
-      &:hover,
-      &:focus {
-        background: linear-gradient(180deg, #53db7a 0%, #308c4a 100%);
-      }
-
-      &:active {
-        background: linear-gradient(180deg, #3fba62 0%, #216d37 100%);
-      }
+      margin-top: 7px;
     }
   }
 
   &__state {
     &-disabled {
-      opacity: 0.6;
+      color: rgba(var(--text-color-hex), 0.1) !important;
       pointer-events: none;
     }
   }

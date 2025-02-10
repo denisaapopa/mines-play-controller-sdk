@@ -1,37 +1,50 @@
 import { Switch as HeadlessSwitch } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import cx from "classnames";
+import { Currency } from "@enigma-lake/zoot-platform-sdk";
+
 import styles from "./Switch.module.scss";
+
+interface SwitchProps {
+  enabled: boolean;
+  onSwitch: () => void;
+  isPlaying: boolean;
+  currency: Currency;
+  disabled: boolean;
+}
 
 export const Switch = ({
   enabled,
-  setEnabled,
+  onSwitch,
+  disabled,
+  currency,
   isPlaying,
-}: {
-  enabled: boolean;
-  setEnabled: () => void;
-  isPlaying: boolean;
-}) => {
-  return (
-    <label htmlFor="material-switch">
-      <HeadlessSwitch
-        checked={enabled}
-        onChange={setEnabled}
-        as={Fragment}
-        disabled={isPlaying}
-      >
-        <div className={cx(styles.base)}>
-          <div
-            className={cx(styles.switcher, enabled ? styles.blue : styles.gray)}
-          >
-            <span
-              className={cx(styles.thumb, enabled && styles["move-right"])}
-            />
-          </div>
+}: SwitchProps) => {
+  const switcherClassName = useMemo(
+    () =>
+      cx(styles.switcher, styles[currency], {
+        [styles.checked]: enabled,
+        [styles.unchecked]: !enabled,
+        [styles.disabled]: disabled,
+      }),
+    [enabled, currency, disabled],
+  );
 
-          <span>Auto</span>
+  return (
+    <HeadlessSwitch
+      checked={enabled}
+      onChange={onSwitch}
+      as={Fragment}
+      disabled={isPlaying}
+    >
+      <div className={styles.base}>
+        <span className={styles.label}>Auto</span>
+        <div className={switcherClassName}>
+          <span
+            className={cx(styles.thumb, { [styles["move-right"]]: enabled })}
+          />
         </div>
-      </HeadlessSwitch>
-    </label>
+      </div>
+    </HeadlessSwitch>
   );
 };

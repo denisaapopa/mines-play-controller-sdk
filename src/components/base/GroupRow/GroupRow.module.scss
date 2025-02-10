@@ -1,3 +1,5 @@
+@use "../../common.scss" as *;
+
 .label {
   font-style: Inter;
   font-weight: 700;
@@ -10,7 +12,8 @@
 
 .group {
   display: flex;
-  height: 44px;
+  width: 231px;
+  margin-top: 5px;
 
   .groupItem {
     $border-radius: 10px;
@@ -31,14 +34,23 @@
       margin-left: 2px;
     }
   }
-  .svg-icon {
-    pointer-events: none;
-    stroke-width: 0;
-    stroke: currentColor;
-    fill: currentColor;
-    flex-shrink: 0;
-    display: inline-block;
-    width: 1em;
-    height: 1em;
+}
+
+.x2 {
+  display: block;
+  width: 35px;
+  height: 35px;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.last {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
 }

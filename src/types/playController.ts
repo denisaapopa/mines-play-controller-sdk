@@ -5,6 +5,10 @@ export type StylingProps = {
     backgroundColorHex?: string;
     textColorHex?: string;
   };
+  panel: {
+    bottom: string;
+    panelBackgroundColorHex: string;
+  };
 };
 
 export type CurrencyProps = {

@@ -4,7 +4,7 @@ import { createContext } from "react";
 import { GAME_MODE, AUTO_PLAY_STATE } from "../../types/gameMode";
 import { PlayControllerProps } from "../../types/playController";
 
-export interface GameStateContextType {
+export interface InteractivePlayStateContextType {
   mode: GAME_MODE;
   autoplayState: AUTO_PLAY_STATE;
   playedRounds: number;
@@ -27,14 +27,16 @@ export interface GameStateContextType {
   setSelection: (values: number[]) => void;
 }
 
-export const GameStateContext = createContext<GameStateContextType | undefined>(
-  undefined,
-);
+export const InteractivePlayStateContext = createContext<
+  InteractivePlayStateContextType | undefined
+>(undefined);
 
-export const useGameState = () => {
-  const context = useContext(GameStateContext);
+export const useInteractivePlayState = () => {
+  const context = useContext(InteractivePlayStateContext);
   if (!context) {
-    throw new Error("useGameState must be used within a GameStateProvider");
+    throw new Error(
+      "useInteractivePlayState must be used within a InteractivePlayStateProvider",
+    );
   }
   return context;
 };

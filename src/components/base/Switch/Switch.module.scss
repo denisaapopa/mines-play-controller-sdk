@@ -1,48 +1,68 @@
+@use "../../common.scss" as *;
+
 .base {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 12px;
+  gap: 6px;
 }
+
 .switcher {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 60px; // Adjust width of the switch container
-  height: 34px; // Adjust height of the switch container
-  padding: 4px;
-  border-radius: 9999px; // Fully rounded for the container
-  background-color: #e5e5e5; // Default background color (off state)
-  transition: background-color 0.3s ease; // Smooth background color transition
+  width: 43px;
+  height: 21px;
+  border-radius: 23px;
+  background-color: #0e2749;
+  transition: background-color 0.3s ease;
+
   cursor: pointer;
-  border: none;
-  outline: none;
+}
 
-  &.blue {
-    background-color: #3b82f6; // Background color when switch is on
-  }
+.gold {
+  background-color: #d4af26;
+}
 
-  &.gray {
-    background-color: #e5e5e5; // Background color when switch is off
-  }
+.sweeps {
+  background-color: #10be68;
+}
 
-  &.disabled {
-    cursor: not-allowed;
-    background-color: #d1d5db; // Lighter background for disabled state
-  }
+.unchecked {
+  background-color: #0e2749b8;
+}
+
+.disabled {
+  opacity: 0.1;
 }
 
 .base .thumb {
   position: absolute;
-  top: 50%;
-  left: 4px; // Initial position of the thumb when off
-  transform: translateY(-50%);
-  width: 26px; // Size of the thumb
-  height: 26px; // Size of the thumb
-  background-color: white; // Thumb color
-  border-radius: 50%; // Fully rounded thumb
-  transition: transform 0.3s ease; // Smooth transition for thumb movement
+  left: 3px;
+  width: 17px;
+  height: 17px;
+  background-color: #5c74b1;
+  border-radius: 50%;
+  transition: all 0.3s ease;
 }
 
 .base .thumb.move-right {
-  transform: translateY(-50%) translateX(26px); // Move thumb to the right when on
+  background-color: #fff;
+
+  transform: translateX(21px);
+}
+
+.base .label {
+  color: #fff;
+
+  font-family: Inter;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 125%;
+  letter-spacing: 0.5px;
 }

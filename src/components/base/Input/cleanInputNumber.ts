@@ -1,34 +1,27 @@
-const allowSeparators = [",", "."];
-export function findFirstSeparatorIndex(value: string) {
-  for (let index = 0; index < value.length; index++) {
-    const symbol = value[index];
-    if (allowSeparators.includes(symbol)) {
-      return index;
-    }
-  }
-  return undefined;
-}
-export function cleanInputNumber(value: string) {
-  // Remove all non-numeric characters except comma and dot
-  const cleaned = value.replace(/[^0-9,.]/g, "");
+const ALLOWED_SEPARATORS = [",", "."];
 
-  if ("0" === cleaned) {
+export function findFirstSeparatorIndex(value: string): number | undefined {
+  const index = [...value].findIndex((char) =>
+    ALLOWED_SEPARATORS.includes(char),
+  );
+  return index !== -1 ? index : undefined;
+}
+
+export function cleanInputNumber(value: string): string {
+  const cleaned = value.replace(/[^0-9,.]/g, "");
+  if (cleaned === "0") {
     return cleaned;
   }
 
-  // Remove leading zeros and extra separators
-  const trimmed = cleaned.replace(/^0+(?!\b)/, "").replace(/(,|\.){2,}/g, "$1");
-
+  const trimmed = cleaned.replace(/^0+(?!$)/, "").replace(/(,|\.){2,}/g, "$1");
   const separatorIndex = findFirstSeparatorIndex(trimmed);
   if (separatorIndex === undefined) {
     return trimmed;
-  } else {
-    const beforeSeparator = trimmed.slice(0, separatorIndex);
-    const afterSeparator = trimmed.slice(separatorIndex + 1);
-    const cleanedBeforeSeparator = beforeSeparator.replace(/[,.]/g, "");
-    const cleanedAfterSeparator = afterSeparator.replace(/[,.]/g, "");
-    return `${
-      cleanedBeforeSeparator.length === 0 ? "0" : cleanedBeforeSeparator
-    }.${cleanedAfterSeparator}`;
   }
+
+  const integerPart =
+    trimmed.slice(0, separatorIndex).replace(/[,.]/g, "") || "0";
+  const decimalPart = trimmed.slice(separatorIndex + 1).replace(/[,.]/g, "");
+
+  return `${integerPart}.${decimalPart}`;
 }

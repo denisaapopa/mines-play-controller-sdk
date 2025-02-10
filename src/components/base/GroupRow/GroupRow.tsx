@@ -7,7 +7,7 @@ export type Props = ComponentProps<"div"> & {
   label?: string;
 };
 
-const GroupRow = ({ className, children, label, ...restProps }: Props) => {
+const GroupRow = ({ children, label, className, ...restProps }: Props) => {
   return (
     <div {...restProps} className={cx(styles.base, className)}>
       {label && <div className={styles.label}>{label}</div>}
