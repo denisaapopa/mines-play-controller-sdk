@@ -10,4 +10,10 @@ html {
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
+  cursor: default;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

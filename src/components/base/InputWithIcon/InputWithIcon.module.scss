@@ -45,7 +45,9 @@
 }
 
 .inputWithLabel {
-  margin-top: 15px;
+  padding-top: 15px;
+  user-select: none;
+  z-index: 1;
 }
 
 .gold {

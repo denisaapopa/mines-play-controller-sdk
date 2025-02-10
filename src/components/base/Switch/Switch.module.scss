@@ -8,6 +8,7 @@
   transform: translateY(-50%);
   right: 12px;
   gap: 6px;
+  cursor: pointer;
 }
 
 .switcher {
@@ -41,6 +42,7 @@
 }
 
 .base .thumb {
+  cursor: pointer;
   position: absolute;
   left: 3px;
   width: 17px;
@@ -58,6 +60,7 @@
 
 .base .label {
   color: #fff;
+  cursor: pointer;
 
   font-family: Inter;
   font-size: 10px;

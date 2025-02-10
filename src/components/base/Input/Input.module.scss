@@ -3,10 +3,11 @@
 .base {
   padding: 10px 12px;
   color: rgba(var(--text-color-hex), 1);
-  border-radius: 10px;
+
   border: none;
   outline: none;
   width: 100%;
+  user-select: none !important;
 }
 
 .disabled {
