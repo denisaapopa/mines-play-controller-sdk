@@ -15,7 +15,7 @@ export type CurrencyProps = {
 
 export type ActionsProps = {
   onPlay: () => void;
-  onAutoPlay: (selection?: number[], callback?: () => void) => void;
+  onAutoPlay: (selection: number[], next: () => void, stop: () => void) => void;
   onCashout: () => void;
 };
 

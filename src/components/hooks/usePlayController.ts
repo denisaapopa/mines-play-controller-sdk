@@ -57,16 +57,20 @@ export const usePlayController = () => {
     setPlayedRounds(currentPlayedRounds + 1);
     setNumberOfPlays((prev) => Math.max(prev - 1, 0));
 
-    config.onAutoPlay(selection, () => {
-      if (!isAutoplayActiveRef.current) {
-        return;
-      }
+    config.onAutoPlay(
+      selection,
+      () => {
+        if (!isAutoplayActiveRef.current) {
+          return;
+        }
 
-      playIntervalRef.current = setTimeout(
-        () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
-        autoPlayDelay,
-      );
-    });
+        playIntervalRef.current = setTimeout(
+          () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
+          autoPlayDelay,
+        );
+      },
+      stopAutoplay,
+    );
   };
 
   const handleAutoPlay = () => {

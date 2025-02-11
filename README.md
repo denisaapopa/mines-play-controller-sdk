@@ -112,9 +112,10 @@ const GameExample = () => {
       winText: "0.00 SC",
     },
     onPlay: () => console.log("Play button clicked"),
-    onAutoPlay: (selection, callback) => {
+    onAutoPlay: (selection, next, stop) => {
       console.log("Auto Play started with selection:", selection);
-      callback();
+      next(); // Proceed to the next autoplay round
+      stop(); // Stop autoplay (e.g., in case of an error or when the user chooses to stop)
     },
     onCashout: () => console.log("Cashout clicked"),
     playOptions: {
