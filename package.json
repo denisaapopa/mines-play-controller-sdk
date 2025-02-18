@@ -1,6 +1,6 @@
 {
-  "name": "@enigma-lake/play-controller-sdk",
-  "version": "1.0.11",
+  "name": "@enigma-lake/mines-play-controller-sdk",
+  "version": "1.0.0",
   "description": "A React component library for building gameplay interfaces",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -25,12 +25,13 @@
     "dist/index.d.ts"
   ],
   "peerDependencies": {
-    "@enigma-lake/zoot-platform-sdk": "1.0.7",
+    "@enigma-lake/zoot-platform-sdk": "^1.0.21",
+    "@headlessui/react": "^2.2.0",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "react": "18.2.0",
-    "@headlessui/react": "^2.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "use-debounce": "^10.0.4"
   },
   "resolutions": {
     "react": "18.2.0",

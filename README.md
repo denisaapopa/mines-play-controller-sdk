@@ -1,13 +1,13 @@
 
-# PlayController
+# MinesPlayController
 
-The `PlayController` component is a key part of the gameplay interface, allowing users to initiate a play or cash out based on their current game state. It supports manual play, autoplay for a specified number of plays, dynamic currency handling, and play amount adjustments.
+The `MinesPlayController` component is a key part of the gameplay interface, allowing users to initiate a play or cash out based on their current game state. It supports manual play, autoplay for a specified number of plays, dynamic currency handling, and play amount adjustments.
 
 ---
 
 ## Component Overview
 
-The `PlayController` allows the user to:
+The `MinesPlayController` allows the user to:
 
 - Select a currency.
 - Adjust the play amount.
@@ -22,7 +22,7 @@ The `PlayController` allows the user to:
 ### 1. Install the package using npm:
 
 ```bash
-npm install @enigma-lake/play-controller-sdk
+npm install @enigma-lake/mines-play-controller-sdk
 ```
 
 ### 2. Import the component and styles in your project:
@@ -32,9 +32,9 @@ import {
   AUTO_PLAY_STATE,
   GAME_MODE,
   AutoManualPlayProvider,
-} from "@enigma-lake/play-controller-sdk";
+} from "@enigma-lake/mines-play-controller-sdk";
 
-import "@enigma-lake/play-controller-sdk/dist/style.css";
+import "@enigma-lake/mines-play-controller-sdk/dist/style.css";
 ```
 
 ---
@@ -43,7 +43,7 @@ import "@enigma-lake/play-controller-sdk/dist/style.css";
 
 ### `AutoManualPlayProvider`
 
-The `AutoManualPlayProvider` wraps the PlayController, managing both manual play and autoplay. It uses React Context to provide game state and actions throughout the component tree.
+The `AutoManualPlayProvider` wraps the MinesPlayController, managing both manual play and autoplay. It uses React Context to provide game state and actions throughout the component tree.
 
 🔹 **Features of `AutoManualPlayProvider`**:
 - **Manages Game Mode**: Switches between MANUAL and AUTOPLAY.
@@ -100,8 +100,8 @@ Handles game-specific settings and states.
 ## Example Usage
 
 ```tsx
-import "@enigma-lake/play-controller-sdk/dist/style.css";
-import { AutoManualPlayProvider, GAME_MODE, AUTO_PLAY_STATE } from "@enigma-lake/play-controller-sdk";
+import "@enigma-lake/mines-play-controller-sdk/dist/style.css";
+import { AutoManualPlayProvider, GAME_MODE, AUTO_PLAY_STATE } from "@enigma-lake/mines-play-controller-sdk";
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
 
 const GameExample = () => {
