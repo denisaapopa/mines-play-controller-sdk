@@ -1,6 +1,6 @@
 {
   "name": "@enigma-lake/mines-play-controller-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A React component library for building gameplay interfaces",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
