@@ -7,6 +7,7 @@
   cursor: pointer;
   outline: none;
   user-select: none;
+  font-weight: 700;
 
   &__theme {
     &-ghost {
@@ -50,12 +51,24 @@
 
 .buttonCashout {
   background: linear-gradient(357deg, #7f44c3 22.01%, #9f5eeb 97.97%);
+  &:active,
+  &__active {
+    background: rgba(89, 47, 157, 1);
+  }
 }
 
 .buttonSweeps {
   background: linear-gradient(357deg, #10be68 23.9%, #29cf7d 97.97%);
+  &:active,
+  &__active {
+    background: rgba(0, 140, 71, 1);
+  }
 }
 
 .buttonGold {
   background: linear-gradient(357deg, #bf9e21 22.01%, #f0c72c 97.97%);
+  &:active,
+  &__active {
+    background: rgba(154, 124, 4, 1);
+  }
 }
